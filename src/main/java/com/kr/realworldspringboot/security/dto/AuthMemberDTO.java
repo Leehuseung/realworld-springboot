@@ -15,6 +15,8 @@ public class AuthMemberDTO extends User {
 
     private String email;
     private String username;
+    private String bio;
+    private String image;
 
 
     public AuthMemberDTO(String email, String password, Collection<? extends GrantedAuthority> authorities) {

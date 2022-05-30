@@ -41,6 +41,9 @@ class AuthUserDetailService implements UserDetailsService {
 
         authMember.setEmail(member.getEmail());
         authMember.setUsername(member.getUsername());
+        authMember.setBio(member.getBio());
+        authMember.setImage(member.getImage());
+
         return authMember;
     }
 }
