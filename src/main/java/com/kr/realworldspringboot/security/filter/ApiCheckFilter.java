@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 @Log4j2
 public class ApiCheckFilter extends OncePerRequestFilter {
@@ -20,9 +21,11 @@ public class ApiCheckFilter extends OncePerRequestFilter {
     private AntPathMatcher antPathMatcher;
     private String pattern;
     private JWTUtil jwtUtil;
+    private List<String> allowList;
 
-    public ApiCheckFilter(String pattern, JWTUtil jwtUtil) {
+    public ApiCheckFilter(String pattern, List<String> allowList, JWTUtil jwtUtil) {
         this.antPathMatcher = new AntPathMatcher();
+        this.allowList = allowList;
         this.pattern = pattern;
         this.jwtUtil = jwtUtil;
     }
@@ -30,9 +33,11 @@ public class ApiCheckFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if(request.getRequestURI().equals("/api/users/login")) {
-            filterChain.doFilter(request,response);
-            return;
+        for (String allowPattern : allowList) {
+            if(antPathMatcher.match(allowPattern,request.getRequestURI())){
+                filterChain.doFilter(request,response);
+                return;
+            }
         }
 
         if(antPathMatcher.match(pattern, request.getRequestURI())) {

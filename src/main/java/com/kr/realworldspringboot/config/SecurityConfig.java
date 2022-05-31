@@ -13,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -24,16 +27,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public ApiCheckFilter apiCheckFilter() {
+        List<String> list = new ArrayList<>();
+        list.add("/api/users/login");
+        list.add("/api/users");
         //""에 해당하는 url만 ApiCheckFilter가 동작한다.
-        return new ApiCheckFilter("/**",jwtUtil());
+        return new ApiCheckFilter("/**",list,jwtUtil());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.authorizeRequests()
-                .anyRequest().authenticated();
-
+//        http.authorizeRequests()
+//                .anyRequest().authenticated();
 //        http.formLogin(); // auth가 없을경우 로그인 페이지 이동
 
         http.csrf().disable();
