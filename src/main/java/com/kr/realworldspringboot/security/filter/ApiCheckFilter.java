@@ -62,14 +62,7 @@ public class ApiCheckFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
-        //Authorization 헤더가 있는지 테스트한다. 12345678
-//        if(StringUtils.hasText(authHeader)) {
-//            log.info("Authorization extist : " + authHeader);
-//            if(authHeader.equals("12345678")) {
-//                checkResult = true;
-//            }
-//        }
-
+        //Authorization 헤더 검증
         if(StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")){
             log.info("Authorization exist : " + authHeader);
 
