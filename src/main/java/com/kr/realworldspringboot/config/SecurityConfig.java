@@ -25,7 +25,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public ApiCheckFilter apiCheckFilter() {
         //""에 해당하는 url만 ApiCheckFilter가 동작한다.
-        return new ApiCheckFilter("/*",jwtUtil());
+        return new ApiCheckFilter("/**",jwtUtil());
     }
 
     @Override
@@ -46,8 +46,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * login 이라는 경로로 접근할 때 동작을 지정한다.
-     * @return
-     * @throws Exception
      */
     @Bean
     public ApiLoginFilter apiLoginFilter() throws Exception {
