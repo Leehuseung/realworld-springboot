@@ -29,22 +29,40 @@ public class ApiCheckFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if(!request.getRequestURI().equals("/api/users/login") && antPathMatcher.match(pattern, request.getRequestURI())) {
+
+        if(request.getRequestURI().equals("/api/users/login")) {
+            filterChain.doFilter(request,response);
+            return;
+        }
+
+        if(antPathMatcher.match(pattern, request.getRequestURI())) {
 
             //Authorization Header가 있는지 검사한다.
-            boolean checkResult = checkAuthHeader(request);
+            if(hasAuthHeader(request)){
+                if(checkAuthHeader(request)){
+                    filterChain.doFilter(request,response);
+                    return;
+                } else {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("application/json; charset=utf-8");
 
-            if(checkResult) {
-                filterChain.doFilter(request,response);
-                return;
+                    JSONObject json = new JSONObject();
+                    String message = "Forbidden requests, a request requires authentication";
+                    json.put("code","403");
+                    json.put("message",message);
+
+                    PrintWriter out = response.getWriter();
+                    out.print(json);
+                }
+
             } else {
-                //헤더가 없는 경우 403 발생.
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-
+                //헤더가 없는 경우 401 발생.
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json; charset=utf-8");
+
                 JSONObject json = new JSONObject();
-                String message = "FAIL CHECK API TOKEN";
-                json.put("code","403");
+                String message = "Unauthorized requests";
+                json.put("code","401");
                 json.put("message",message);
 
                 PrintWriter out = response.getWriter();
@@ -57,13 +75,24 @@ public class ApiCheckFilter extends OncePerRequestFilter {
 
     }
 
+    private boolean hasAuthHeader(HttpServletRequest request) {
+        boolean checkResult = false;
+
+        String authHeader = request.getHeader("Authorization");
+
+        if(StringUtils.hasText(authHeader)){
+            checkResult = true;
+        }
+        return checkResult;
+    }
+
     private boolean checkAuthHeader(HttpServletRequest request) {
         boolean checkResult = false;
 
         String authHeader = request.getHeader("Authorization");
 
         //Authorization 헤더 검증
-        if(StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")){
+        if(authHeader.startsWith("Bearer ")){
             log.info("Authorization exist : " + authHeader);
 
             try {
