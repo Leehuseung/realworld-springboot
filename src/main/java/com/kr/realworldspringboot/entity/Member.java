@@ -7,6 +7,8 @@ import javax.persistence.Id;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Member {
 
