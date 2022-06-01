@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @Log4j2
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/api/users")
-    public Member registUser(@RequestBody MemberRegiDTO memberRegiDTO){
+    public Member register(@RequestBody @Valid MemberRegiDTO memberRegiDTO){
         Member member = memberService.registerMember(memberRegiDTO);
         return member;
     }

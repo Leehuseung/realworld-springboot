@@ -4,9 +4,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+
 @Getter
 @Setter
 public class MemberRegiDTO {
+    @Valid
     private User user;
 
     public String getEmail() {
@@ -19,14 +23,18 @@ public class MemberRegiDTO {
 
     public String getPassword() {
         return user.getPassword();
+
     }
 
     @Getter
     @Setter
     @NoArgsConstructor
     class User {
-        private String email;
+        @NotEmpty(message = "username")
         private String username;
+        @NotEmpty(message = "email")
+        private String email;
+        @NotEmpty(message = "password")
         private String password;
     }
 }
