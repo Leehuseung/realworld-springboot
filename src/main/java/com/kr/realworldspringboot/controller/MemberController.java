@@ -1,6 +1,6 @@
 package com.kr.realworldspringboot.controller;
 
-import com.kr.realworldspringboot.dto.MemberRegiDTO;
+import com.kr.realworldspringboot.dto.MemberRegisterDTO;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.service.MemberService;
 import com.kr.realworldspringboot.util.JWTUtil;
@@ -23,8 +23,8 @@ public class MemberController {
     private final JWTUtil jwtUtil;
 
     @PostMapping("/api/users")
-    public ResultMember registerMember(@RequestBody @Valid MemberRegiDTO memberRegiDTO){
-        Member member = memberService.registerMember(memberRegiDTO);
+    public ResultMember registerMember(@RequestBody @Valid MemberRegisterDTO memberRegisterDTO){
+        Member member = memberService.registerMember(memberRegisterDTO);
 
         MemberRegisterResponse memberRegisterResponse = MemberRegisterResponse.builder()
                 .email(member.getEmail())

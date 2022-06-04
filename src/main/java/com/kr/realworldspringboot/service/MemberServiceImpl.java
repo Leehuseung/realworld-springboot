@@ -1,6 +1,6 @@
 package com.kr.realworldspringboot.service;
 
-import com.kr.realworldspringboot.dto.MemberRegiDTO;
+import com.kr.realworldspringboot.dto.MemberRegisterDTO;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +17,8 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
 
     @Override
-    public Member registerMember(MemberRegiDTO memberRegiDTO) {
-        Member member = regiDtoToEntity(memberRegiDTO);
+    public Member registerMember(MemberRegisterDTO memberRegisterDTO) {
+        Member member = regiDtoToEntity(memberRegisterDTO);
         memberRepository.save(member);
         return member;
     }

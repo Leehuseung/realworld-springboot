@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Setter
-public class MemberRegiDTO {
+public class MemberRegisterDTO {
     @Valid
     private User user;
 
