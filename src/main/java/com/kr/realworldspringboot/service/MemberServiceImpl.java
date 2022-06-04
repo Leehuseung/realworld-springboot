@@ -1,6 +1,7 @@
 package com.kr.realworldspringboot.service;
 
 import com.kr.realworldspringboot.dto.MemberRegisterDTO;
+import com.kr.realworldspringboot.dto.MemberUpdateDTO;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,17 @@ public class MemberServiceImpl implements MemberService{
     public Member selectMemberById(String id) {
         Optional<Member> member = memberRepository.findById(id);
         return member.get();
+    }
+
+    @Override
+    public String updateMember(MemberUpdateDTO memberUpdateDTO) {
+
+        Member member = memberRepository.findById(memberUpdateDTO.getEmail()).get();
+        member.setImage(memberUpdateDTO.getImage());
+        member.setBio(memberUpdateDTO.getBio());
+        memberRepository.save(member);
+
+        return member.getEmail();
     }
 
 

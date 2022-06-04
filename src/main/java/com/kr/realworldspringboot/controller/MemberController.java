@@ -1,6 +1,7 @@
 package com.kr.realworldspringboot.controller;
 
 import com.kr.realworldspringboot.dto.MemberRegisterDTO;
+import com.kr.realworldspringboot.dto.MemberUpdateDTO;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.service.MemberService;
 import com.kr.realworldspringboot.util.JWTUtil;
@@ -53,6 +54,25 @@ public class MemberController {
 
         return new ResultMember(memberRegisterResponse);
     }
+
+    @PutMapping("/api/user")
+    public ResultMember updateMember(@RequestHeader Map<String, Object> requestHeader,@RequestBody @Valid MemberUpdateDTO memberUpdateDTO){
+
+        String token = jwtUtil.getToken((String)requestHeader.get("authorization"));
+        String id = memberService.updateMember(memberUpdateDTO);
+        Member member = memberService.selectMemberById(id);
+
+        MemberRegisterResponse memberRegisterResponse = MemberRegisterResponse.builder()
+                .email(member.getEmail())
+                .token(token)
+                .username(member.getUsername())
+                .bio(member.getBio())
+                .image(member.getImage())
+                .build();
+
+        return new ResultMember(memberRegisterResponse);
+    }
+
 
     @Data
     @AllArgsConstructor
