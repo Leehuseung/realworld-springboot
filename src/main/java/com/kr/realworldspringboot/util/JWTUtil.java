@@ -5,11 +5,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.impl.DefaultJws;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Log4j2
+@Component
 public class JWTUtil {
 
     private String securityKey = "realworldSecret";
@@ -27,7 +29,7 @@ public class JWTUtil {
                 .compact();
     }
 
-    public String validateAndExtract(String tokenStr) throws Exception {
+    public String validateAndExtract(String tokenStr) {
         String contentValue = null;
 
         try {
@@ -42,6 +44,15 @@ public class JWTUtil {
         }
 
         return contentValue;
+    }
+
+    public String getEmailbyHeader(String header) {
+        String token = getToken(header);
+        return validateAndExtract(token);
+    }
+
+    public String getToken(String authorization) {
+        return authorization.substring(7);
     }
 }
 

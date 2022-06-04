@@ -7,6 +7,8 @@ public interface MemberService {
 
     Member registerMember(MemberRegiDTO memberRegiDTO);
 
+    Member selectMemberById(String id);
+
     default Member regiDtoToEntity(MemberRegiDTO memberRegiDTO) {
         Member member = Member.builder()
                 .email(memberRegiDTO.getEmail())
