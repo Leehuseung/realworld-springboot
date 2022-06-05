@@ -6,7 +6,7 @@ import com.kr.realworldspringboot.entity.Member;
 
 public interface MemberService {
 
-    Member registerMember(MemberRegisterDTO memberRegisterDTO);
+    String registerMember(MemberRegisterDTO memberRegisterDTO);
 
     Member selectMemberById(String id);
 

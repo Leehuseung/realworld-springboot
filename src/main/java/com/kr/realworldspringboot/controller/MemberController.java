@@ -25,7 +25,9 @@ public class MemberController {
 
     @PostMapping("/api/users")
     public ResultMember registerMember(@RequestBody @Valid MemberRegisterDTO memberRegisterDTO){
-        Member member = memberService.registerMember(memberRegisterDTO);
+
+        String id = memberService.registerMember(memberRegisterDTO);
+        Member member = memberService.selectMemberById(id);
 
         MemberRegisterResponse memberRegisterResponse = MemberRegisterResponse.builder()
                 .email(member.getEmail())

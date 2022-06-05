@@ -3,6 +3,7 @@ package com.kr.realworldspringboot.service;
 import com.kr.realworldspringboot.dto.MemberRegisterDTO;
 import com.kr.realworldspringboot.dto.MemberUpdateDTO;
 import com.kr.realworldspringboot.entity.Member;
+import com.kr.realworldspringboot.exception.DuplicateException;
 import com.kr.realworldspringboot.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -18,10 +19,21 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
 
     @Override
-    public Member registerMember(MemberRegisterDTO memberRegisterDTO) {
+    public String registerMember(MemberRegisterDTO memberRegisterDTO) {
         Member member = regiDtoToEntity(memberRegisterDTO);
+
+        Optional<Member> findByIdMember = memberRepository.findById(member.getEmail());
+        if(!findByIdMember.isEmpty()){
+            throw new DuplicateException("email");
+        }
+
+        Member findByUsernameMember = memberRepository.findMemberByUsername(member.getUsername());
+        if(findByUsernameMember != null) {
+            throw new DuplicateException("username");
+        }
+
         memberRepository.save(member);
-        return member;
+        return member.getEmail();
     }
 
     @Override
