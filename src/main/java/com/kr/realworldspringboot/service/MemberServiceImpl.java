@@ -7,6 +7,7 @@ import com.kr.realworldspringboot.exception.DuplicateException;
 import com.kr.realworldspringboot.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,6 +18,7 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public String registerMember(MemberRegisterDTO memberRegisterDTO) {
@@ -31,6 +33,8 @@ public class MemberServiceImpl implements MemberService{
         if(findByUsernameMember != null) {
             throw new DuplicateException("username");
         }
+
+        member.setPassword(passwordEncoder.encode(member.getPassword()));
 
         memberRepository.save(member);
         return member.getEmail();
