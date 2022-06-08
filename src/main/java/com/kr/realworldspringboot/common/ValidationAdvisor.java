@@ -38,6 +38,6 @@ public class ValidationAdvisor extends ResponseEntityExceptionHandler {
         json.put("errors",errors);
         body.put("errors", errors);
 
-        return new ResponseEntity<>(body, headers, status);
+        return new ResponseEntity<>(body, headers, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }
