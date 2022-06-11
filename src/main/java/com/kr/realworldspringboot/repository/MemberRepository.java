@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface MemberRepository extends JpaRepository<Member, String> {
 
-    @Query("select m from Member m where m.username in :name")
-    Member findMemberByUsername(String name);
+    Member findMemberByUsername(String username);
+
+
 
 }
