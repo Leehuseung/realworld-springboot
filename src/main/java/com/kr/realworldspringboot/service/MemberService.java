@@ -12,6 +12,8 @@ public interface MemberService {
 
     String updateMember(MemberUpdateDTO memberUpdateDTO);
 
+    Member selectMemberByUsername(String username);
+
     default Member regiDtoToEntity(MemberRegisterDTO memberRegisterDTO) {
         Member member = Member.builder()
                 .email(memberRegisterDTO.getEmail())
