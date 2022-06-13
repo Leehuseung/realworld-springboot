@@ -42,7 +42,6 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     @Override
-    //TODO unfollow refacotiring
     public void unfollowUser(String loginEmail, String username) {
         Member member = memberRepository.findMemberByUsername(username);
 

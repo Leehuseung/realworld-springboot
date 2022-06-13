@@ -16,14 +16,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class MemberControllerTest extends BaseControllerTest{
 
-
     @Autowired
     MemberRepository memberRepository;
 
     @Autowired
     MemberService memberService;
-
-
 
     @Test
     @DisplayName("유저 로그인 테스트")
