@@ -58,10 +58,6 @@ public class MemberServiceImpl implements MemberService{
         member.setBio(memberUpdateDTO.getBio());
         memberRepository.save(member);
 
-//        profileRepository.updateFollowUsername(,memberUpdateDTO.getUsername());
-
-
-
         return member.getEmail();
     }
 

@@ -1,6 +1,5 @@
 package com.kr.realworldspringboot.controller;
 
-import com.kr.realworldspringboot.entity.Follow;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.service.MemberService;
 import com.kr.realworldspringboot.service.ProfileService;

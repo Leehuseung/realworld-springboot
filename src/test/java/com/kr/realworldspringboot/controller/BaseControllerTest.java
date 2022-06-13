@@ -77,9 +77,6 @@ public class BaseControllerTest {
 
         memberRepository.save(member);
 
-
-
-
     }
 
     @AfterEach
