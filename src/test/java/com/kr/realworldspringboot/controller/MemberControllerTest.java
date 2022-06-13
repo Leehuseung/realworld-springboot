@@ -143,7 +143,7 @@ class MemberControllerTest extends BaseControllerTest{
     @Test
     @DisplayName("유저 업데이트")
     public void update_user(@Autowired MockMvc mvc) throws Exception {
-        String body = "{\"user\":{\"email\":\""+TEST_01_REALWORLD_COM+"\",\"bio\":\"I like to skateboard\",\"image\":\"https://i.stack.imgur.com/xHWG8.jpg\"}}";
+        String body = "{\"user\":{\"email\":\""+TEST_01_REALWORLD_COM+"\",\"username\":\"test01\",\"bio\":\"I like to skateboard\",\"image\":\"https://i.stack.imgur.com/xHWG8.jpg\"}}";
 
         //when
         mvc.perform(put("/api/user").header(AUTHORIZATION,test01tokenHeader).contentType(MediaType.APPLICATION_JSON).content(body))
@@ -153,6 +153,36 @@ class MemberControllerTest extends BaseControllerTest{
                 .andExpect(jsonPath("$.user.token").isNotEmpty())
                 .andExpect(jsonPath("$.user.bio").value("I like to skateboard"))
                 .andExpect(jsonPath("$.user.image").value("https://i.stack.imgur.com/xHWG8.jpg"));
+    }
+
+    /**
+     * 유저 업데이트시 Follow테이블의 Username도 업데이트돼야한다.
+     * test03을 test20으로 업데이트한뒤 여전히 test01이 구독중인지 확인한다.
+     * @param mvc
+     * @throws Exception
+     */
+    @Test
+    @DisplayName("유저 업데이트시 Follow도 업데이트 되는지 확인")
+    public void update_user_follow(@Autowired MockMvc mvc) throws Exception {
+        String body = "{\"user\":{\"email\":\"test20@realworld.com\", \"username\":\"test20\" ,\"bio\":\"I like to skateboard\",\"image\":\"https://i.stack.imgur.com/xHWG8.jpg\"}}";
+
+        String test03tokenHeader =  "Bearer " + jwtUtil.generateToken("test03@realworld.com");
+
+        //when
+        mvc.perform(put("/api/user").header(AUTHORIZATION,test03tokenHeader).contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user.username").value("test20"))
+                .andExpect(jsonPath("$.user.email").value("test20@realworld.com"))
+                .andExpect(jsonPath("$.user.token").isNotEmpty())
+                .andExpect(jsonPath("$.user.bio").value("I like to skateboard"))
+                .andExpect(jsonPath("$.user.image").value("https://i.stack.imgur.com/xHWG8.jpg"));
+
+        mvc.perform(get("/api/profiles/test20").header(AUTHORIZATION,test03tokenHeader))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.profile.username").value("test20"))
+                .andExpect(jsonPath("$.profile.bio").isNotEmpty())
+                .andExpect(jsonPath("$.profile.image").isNotEmpty())
+                .andExpect(jsonPath("$.profile.following").value(true));
     }
 
 }

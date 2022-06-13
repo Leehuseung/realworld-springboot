@@ -5,6 +5,7 @@ import com.kr.realworldspringboot.dto.MemberUpdateDTO;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.exception.DuplicateException;
 import com.kr.realworldspringboot.repository.MemberRepository;
+import com.kr.realworldspringboot.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,14 +19,15 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
+    private final ProfileRepository profileRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public String registerMember(MemberRegisterDTO memberRegisterDTO) {
         Member member = regiDtoToEntity(memberRegisterDTO);
 
-        Optional<Member> findByIdMember = memberRepository.findById(member.getEmail());
-        if(!findByIdMember.isEmpty()){
+        Optional<Member> findByEmailMember = memberRepository.findByEmail(member.getEmail());
+        if(!findByEmailMember.isEmpty()){
             throw new DuplicateException("email");
         }
 
@@ -42,17 +44,23 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public Member selectMemberById(String id) {
-        Optional<Member> member = memberRepository.findById(id);
+        Optional<Member> member = memberRepository.findByEmail(id);
         return member.get();
     }
 
     @Override
-    public String updateMember(MemberUpdateDTO memberUpdateDTO) {
+    public String updateMember(String email,MemberUpdateDTO memberUpdateDTO) {
 
-        Member member = memberRepository.findById(memberUpdateDTO.getEmail()).get();
+        Member member = memberRepository.findByEmail(email).get();
+        member.setEmail(memberUpdateDTO.getEmail());
+        member.setUsername(memberUpdateDTO.getUsername());
         member.setImage(memberUpdateDTO.getImage());
         member.setBio(memberUpdateDTO.getBio());
         memberRepository.save(member);
+
+//        profileRepository.updateFollowUsername(,memberUpdateDTO.getUsername());
+
+
 
         return member.getEmail();
     }

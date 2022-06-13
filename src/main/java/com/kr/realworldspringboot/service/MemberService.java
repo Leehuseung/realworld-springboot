@@ -10,7 +10,7 @@ public interface MemberService {
 
     Member selectMemberById(String id);
 
-    String updateMember(MemberUpdateDTO memberUpdateDTO);
+    String updateMember(String email,MemberUpdateDTO memberUpdateDTO);
 
     Member selectMemberByUsername(String username);
 

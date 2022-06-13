@@ -3,6 +3,7 @@ package com.kr.realworldspringboot.entity;
 import lombok.*;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
@@ -13,8 +14,10 @@ import javax.persistence.Id;
 public class Member {
 
     @Id
-    private String email;
+    @GeneratedValue
+    private Long id;
 
+    private String email;
     private String username;
     private String password;
     private String bio;

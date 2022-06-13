@@ -1,9 +1,7 @@
 package com.kr.realworldspringboot.controller;
 
 import com.kr.realworldspringboot.entity.Follow;
-import com.kr.realworldspringboot.repository.ProfileRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.kr.realworldspringboot.entity.Member;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,40 +14,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class ProfileControllerTest extends BaseControllerTest {
 
-    public static final String FOLLOWED_USER = "test03";
-
-    @Autowired
-    ProfileRepository profileRepository;
-
-    @BeforeEach
-    void insert_follow(){
-        Follow follow = Follow.builder()
-                .email(TEST_01_REALWORLD_COM)
-                .username(FOLLOWED_USER)
-                .build();
-
-        profileRepository.save(follow);
-    }
-
-    @AfterEach
-    void delete_follow(){
-        profileRepository.deleteAll();
-    }
-
     @Test
     @DisplayName("follow 기본값 insert 확인")
     public void follow_not_null(@Autowired MockMvc mvc) throws Exception {
-        Follow follow = Follow.builder()
-                .email(TEST_01_REALWORLD_COM)
-                .username(FOLLOWED_USER)
-                .build();
+        Member member = memberRepository.findByEmail(TEST_01_REALWORLD_COM).get();
         //given
-        Follow follow2 = profileRepository.findByEmailAndFollowUsername(TEST_01_REALWORLD_COM, FOLLOWED_USER).get();
-
+        Follow follow2 = profileRepository.findByMemberId(member.getId()).get();
         //when
         assertNotNull(follow2);
     }
-
 
     @Test
     @DisplayName("로그인 안하고 사용자 프로필 가져오기")
@@ -62,7 +35,6 @@ class ProfileControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.profile.following").value(false));
     }
 
-
     /**
      * test01으로 test06을 조회한다. test06여부는 데이터베이스에 존재하지 않는다.
      * @param mvc
@@ -71,9 +43,10 @@ class ProfileControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("로그인 하고 사용자 프로필 가져오기. 사용자 follow여부는 DB에 없을 때")
     public void get_follow_login_false_profile(@Autowired MockMvc mvc) throws Exception {
-        mvc.perform(get("/api/profiles/test06").header(AUTHORIZATION,"Bearer " + test01token))
+        String test11 = "test11";
+        mvc.perform(get("/api/profiles/"+test11).header(AUTHORIZATION,"Bearer " + test01token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.profile.username").value("test06"))
+                .andExpect(jsonPath("$.profile.username").value(test11))
                 .andExpect(jsonPath("$.profile.bio").isEmpty())
                 .andExpect(jsonPath("$.profile.image").isEmpty())
                 .andExpect(jsonPath("$.profile.following").value(false));

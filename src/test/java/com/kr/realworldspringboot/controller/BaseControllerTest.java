@@ -1,8 +1,11 @@
 package com.kr.realworldspringboot.controller;
 
+import com.kr.realworldspringboot.entity.Follow;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.repository.MemberRepository;
+import com.kr.realworldspringboot.repository.ProfileRepository;
 import com.kr.realworldspringboot.util.JWTUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,9 @@ public class BaseControllerTest {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    ProfileRepository profileRepository;
 
     protected static JWTUtil jwtUtil;
     protected static String test01token;
@@ -35,6 +41,14 @@ public class BaseControllerTest {
         test01tokenHeader = "Bearer " + test01token;
     }
 
+    /**
+     * 기초 데이터
+     * test01@realworld.com ~ test10@realworld.com 까지
+     * 비밀번호 1
+     *
+     * 모두 test03을 구독하고있음
+     *
+     */
     @BeforeEach
     void defaultUserInsert(){
         //given
@@ -46,7 +60,38 @@ public class BaseControllerTest {
                     .build();
 
             memberRepository.save(member);
+
+            Follow follow = Follow.builder()
+                    .memberId(member.getId())
+                    .username(FOLLOWED_USER)
+                    .build();
+
+            profileRepository.save(follow);
         }
+
+        Member member = Member.builder()
+                .username(TEST+ "11")
+                .password("$2a$10$OkMhBM2HZi0beVdSpuatRu7ACdTdQM/qIttvPcNWnTtsb9QJOXazG")
+                .email("test11@realworld.com")
+                .build();
+
+        memberRepository.save(member);
+
+
+
+
     }
 
+    @AfterEach
+    void deleteUser(){
+        memberRepository.deleteAll();
+    }
+
+
+    @AfterEach
+    void delete_follow(){
+        profileRepository.deleteAll();
+    }
+
+    public static final String FOLLOWED_USER = "test03";
 }

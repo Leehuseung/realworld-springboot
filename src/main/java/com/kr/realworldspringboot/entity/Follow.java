@@ -14,7 +14,7 @@ public class Follow {
     @Id
     @GeneratedValue
     private Long id;
-    private String email;
+    private Long memberId;
     private String username;
 
 

@@ -4,9 +4,9 @@ import com.kr.realworldspringboot.entity.Follow;
 
 public interface ProfileService {
 
-    boolean isFollow(Follow follow);
+    boolean isFollow(String loginEmail, String username);
 
-    void followUser(Follow follow);
+    void followUser(String loginEmail, String username);
 
-    void unfollowUser(Follow follow);
+    void unfollowUser(String loginEmail, String username);
 }

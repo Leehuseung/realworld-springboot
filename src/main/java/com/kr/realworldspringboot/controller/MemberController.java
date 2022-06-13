@@ -60,13 +60,13 @@ public class MemberController {
     @PutMapping("/api/user")
     public ResultMember updateMember(@RequestHeader Map<String, Object> requestHeader,@RequestBody @Valid MemberUpdateDTO memberUpdateDTO){
 
-        String token = jwtUtil.getToken((String)requestHeader.get("authorization"));
-        String id = memberService.updateMember(memberUpdateDTO);
+        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
+        String id = memberService.updateMember(email,memberUpdateDTO);
         Member member = memberService.selectMemberById(id);
 
         MemberRegisterResponse memberRegisterResponse = MemberRegisterResponse.builder()
                 .email(member.getEmail())
-                .token(token)
+                .token(jwtUtil.generateToken(member.getEmail()))
                 .username(member.getUsername())
                 .bio(member.getBio())
                 .image(member.getImage())

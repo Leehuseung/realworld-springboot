@@ -18,15 +18,19 @@ public class JWTUtil {
 
     private long expire = 60 * 24 * 30;
 
-    public String generateToken(String content) throws Exception {
-
-        return Jwts.builder()
-                .setIssuedAt(new Date())
-                .setExpiration(Date.from(ZonedDateTime.now()
-                        .plusMinutes(expire).toInstant()))
-                .claim("sub",content)
-                .signWith(SignatureAlgorithm.HS256, securityKey.getBytes("UTF-8"))
-                .compact();
+    public String generateToken(String content) {
+        try{
+            return Jwts.builder()
+                    .setIssuedAt(new Date())
+                    .setExpiration(Date.from(ZonedDateTime.now()
+                            .plusMinutes(expire).toInstant()))
+                    .claim("sub",content)
+                    .signWith(SignatureAlgorithm.HS256, securityKey.getBytes("UTF-8"))
+                    .compact();
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public String validateAndExtract(String tokenStr) {

@@ -23,15 +23,20 @@ public class MemberUpdateDTO {
         return user.getImage();
     }
 
+    public String getUsername() { return user.getUsername(); }
+
     @Data
     @NoArgsConstructor
     class User {
         @NotEmpty(message = "email")
         private String email;
-        @NotEmpty(message = "bio")
-        private String bio;
+        @NotEmpty(message = "username")
+        private String username;
         @NotEmpty(message = "image")
         private String image;
+        @NotEmpty(message = "bio")
+        private String bio;
+
     }
 }
 

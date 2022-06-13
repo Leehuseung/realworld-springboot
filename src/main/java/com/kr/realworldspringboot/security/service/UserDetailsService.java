@@ -23,9 +23,9 @@ class AuthUserDetailService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        Optional<Member> result = memberRepository.findById(username);
+        Optional<Member> result = memberRepository.findByEmail(email);
 
         if(result.isEmpty()) {
             throw new UsernameNotFoundException("Check Email or Social");

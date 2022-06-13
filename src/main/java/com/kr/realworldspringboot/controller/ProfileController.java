@@ -29,11 +29,7 @@ public class ProfileController {
 
         if(requestHeader.get("authorization") != null){
             String loginEmail = jwtUtil.getEmailbyHeader(requestHeader.get("authorization").toString());
-            Follow follow = Follow.builder()
-                    .email(loginEmail)
-                    .username(username)
-                    .build();
-            isFollow = profileService.isFollow(follow);
+            isFollow = profileService.isFollow(loginEmail, username);
         }
         Member member = memberService.selectMemberByUsername(username);
 
@@ -54,12 +50,7 @@ public class ProfileController {
 
         Member member = memberService.selectMemberByUsername(username);
 
-        Follow follow = Follow.builder()
-                .email(loginEmail)
-                .username(username)
-                .build();
-
-        profileService.followUser(follow);
+        profileService.followUser(loginEmail,username);
 
         ResultProfileResponse memberRegisterResponse = ResultProfileResponse.builder()
                 .username(member.getUsername())
@@ -77,12 +68,7 @@ public class ProfileController {
 
         Member member = memberService.selectMemberByUsername(username);
 
-        Follow follow = Follow.builder()
-                .email(loginEmail)
-                .username(username)
-                .build();
-
-        profileService.unfollowUser(follow);
+        profileService.unfollowUser(loginEmail, username);
 
         ResultProfileResponse memberRegisterResponse = ResultProfileResponse.builder()
                 .username(member.getUsername())
