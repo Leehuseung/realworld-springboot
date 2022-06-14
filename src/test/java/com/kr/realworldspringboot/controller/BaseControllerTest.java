@@ -2,6 +2,7 @@ package com.kr.realworldspringboot.controller;
 
 import com.kr.realworldspringboot.entity.Follow;
 import com.kr.realworldspringboot.entity.Member;
+import com.kr.realworldspringboot.repository.ArticleRepository;
 import com.kr.realworldspringboot.repository.MemberRepository;
 import com.kr.realworldspringboot.repository.ProfileRepository;
 import com.kr.realworldspringboot.util.JWTUtil;
@@ -24,6 +25,9 @@ public class BaseControllerTest {
     @Autowired
     ProfileRepository profileRepository;
 
+    @Autowired
+    ArticleRepository articleRepository;
+
     protected static JWTUtil jwtUtil;
     protected static String test01token;
     protected static String test01tokenHeader;
@@ -31,6 +35,7 @@ public class BaseControllerTest {
     public static final String AUTHORIZATION = "authorization";
     public static final String TEST_01_REALWORLD_COM = "test01@realworld.com";
     public static final String TEST_02_REALWORLD_COM = "test02@realworld.com";
+    public static final String FOLLOWED_USER = "test03";
     public static final String TEST_01 = "test01";
     public static final String TEST = "test";
 
@@ -80,15 +85,9 @@ public class BaseControllerTest {
     }
 
     @AfterEach
-    void deleteUser(){
+    void after_delete(){
+        articleRepository.deleteAll();
         memberRepository.deleteAll();
-    }
-
-
-    @AfterEach
-    void delete_follow(){
         profileRepository.deleteAll();
     }
-
-    public static final String FOLLOWED_USER = "test03";
 }
