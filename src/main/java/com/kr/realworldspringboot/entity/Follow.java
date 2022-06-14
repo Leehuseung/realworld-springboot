@@ -13,6 +13,7 @@ public class Follow {
 
     @Id
     @GeneratedValue
+    @Column(name = "FOLLOW_ID")
     private Long id;
     private Long memberId;
     private String username;
