@@ -66,5 +66,10 @@ public class MemberServiceImpl implements MemberService{
         return memberRepository.findMemberByUsername(username);
     }
 
+    @Override
+    public Member selectByEmail(String email) {
+        return memberRepository.findByEmail(email).get();
+    }
+
 
 }
