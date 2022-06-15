@@ -51,6 +51,9 @@ public class JWTUtil {
     }
 
     public String getEmailbyHeader(String header) {
+        if(header == null){
+            return null;
+        }
         String token = getToken(header);
         return validateAndExtract(token);
     }

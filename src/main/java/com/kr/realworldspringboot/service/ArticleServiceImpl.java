@@ -27,4 +27,11 @@ public class ArticleServiceImpl implements ArticleService{
     public Article getArticle(Long id) {
         return articleRepository.findById(id).get();
     }
+
+    @Override
+    public Article getArticleBySlug(String slug) {
+        return articleRepository.findBySlug(slug);
+    }
+
+
 }

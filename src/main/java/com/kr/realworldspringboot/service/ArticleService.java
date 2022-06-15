@@ -13,6 +13,8 @@ public interface ArticleService {
 
     Article getArticle(Long id);
 
+    Article getArticleBySlug(String slug);
+
     default Article createDtoToEntity(ArticleCreateDTO articleCreateDTO) {
         LocalDateTime date = LocalDateTime.now();
         Article article = Article.builder()

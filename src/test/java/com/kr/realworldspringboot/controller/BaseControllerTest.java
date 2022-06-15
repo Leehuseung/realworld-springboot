@@ -1,5 +1,6 @@
 package com.kr.realworldspringboot.controller;
 
+import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.Follow;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.repository.ArticleRepository;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
 
 
 @SpringBootTest
@@ -39,6 +41,9 @@ public class BaseControllerTest {
     public static final String TEST_01 = "test01";
     public static final String TEST = "test";
 
+    //Article
+    public static final String TEST_ARTICLE_1 = "test-article-1";
+
     @BeforeAll
     static void makeToken() throws Exception{
         jwtUtil = new JWTUtil();
@@ -53,10 +58,12 @@ public class BaseControllerTest {
      *
      * 모두 test03을 구독하고있음
      *
+     * test05가 게시글을 썼음.
+     *
      */
     @BeforeEach
-    void defaultUserInsert(){
-        //given
+    void defaultInsert(){
+        //User
         for (int i = 0; i < 10; i++) {
             Member member = Member.builder()
                     .username(TEST+ "0" +i)
@@ -81,6 +88,21 @@ public class BaseControllerTest {
                 .build();
 
         memberRepository.save(member);
+
+        Member test05_member = memberRepository.findByEmail("test05@realworld.com").get();
+
+        LocalDateTime ldt = LocalDateTime.now();
+        Article article = Article.builder()
+                .slug(TEST_ARTICLE_1)
+                .title("test article 1")
+                .description("this is test article description")
+                .body("test article body")
+                .createdAt(ldt)
+                .updatedAt(ldt)
+                .member(test05_member)
+                .build();
+
+        articleRepository.save(article);
 
     }
 

@@ -5,16 +5,14 @@ import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.service.ArticleService;
 import com.kr.realworldspringboot.service.MemberService;
+import com.kr.realworldspringboot.service.ProfileService;
 import com.kr.realworldspringboot.util.JWTUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -28,21 +26,21 @@ public class ArticleController {
     private final JWTUtil jwtUtil;
     private final ArticleService articleService;
     private final MemberService memberService;
+    private final ProfileService profileService;
 
-    @PostMapping("/api/articles")
-    public ResultArticle createArticle(@RequestHeader Map<String, Object> requestHeader,@RequestBody @Valid ArticleCreateDTO articleCreateDTO){
+    @GetMapping("/api/articles/{slug}")
+    public ResultArticle getArticle(@RequestHeader Map<String, Object> requestHeader, @PathVariable String slug) {
         String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
-        Member member = memberService.selectByEmail(email);
+        Article article = articleService.getArticleBySlug(slug);
+        Member member = article.getMember();
 
-        Long id = articleService.createArticle(articleCreateDTO,member);
-        Article article = articleService.getArticle(id);
-
-        Author author = Author.builder()
+        Author build = Author.builder()
                 .username(member.getUsername())
                 .bio(member.getBio())
                 .image(member.getImage())
-                .following(false)
+                .following(profileService.isFollow(email, article.getMember().getUsername()))
                 .build();
+        Author author = build;
 
         ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
                 .author(author)
@@ -56,6 +54,36 @@ public class ArticleController {
 
         return new ResultArticle(articleCreateResponse);
     }
+
+    @PostMapping("/api/articles")
+    public ResultArticle createArticle(@RequestHeader Map<String, Object> requestHeader,@RequestBody @Valid ArticleCreateDTO articleCreateDTO){
+        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
+        Member member = memberService.selectByEmail(email);
+
+        Long id = articleService.createArticle(articleCreateDTO,member);
+        Article article = articleService.getArticle(id);
+
+        Author build = Author.builder()
+                .username(member.getUsername())
+                .bio(member.getBio())
+                .image(member.getImage())
+                .following(profileService.isFollow(email, member.getUsername()))
+                .build();
+        Author author = build;
+
+        ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
+                .author(author)
+                .slug(article.getSlug())
+                .title(article.getTitle())
+                .description(article.getDescription())
+                .body(article.getBody())
+                .createdAt(article.getCreatedAt())
+                .updatedAt(article.getUpdatedAt())
+                .build();
+
+        return new ResultArticle(articleCreateResponse);
+    }
+
     @Data
     @AllArgsConstructor
     static class ResultArticle {

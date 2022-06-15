@@ -1,5 +1,7 @@
 package com.kr.realworldspringboot.controller;
 
+import com.kr.realworldspringboot.entity.Follow;
+import com.kr.realworldspringboot.entity.Member;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,6 +38,63 @@ class ArticleControllerTest extends BaseControllerTest {
 //                .andExpect(jsonPath("$.article.favoritesCount").value("")) //TODO favoritesCount 구현 필요
                 .andExpect(jsonPath("$.article.author.username").value("test01"))
                 .andExpect(jsonPath("$.article.author.following").value(false));
+    }
+
+    @Test
+    @DisplayName("기사 조회 테스트. 로그인 정보 없음.")
+    public void get_article_login(@Autowired MockMvc mvc) throws Exception {
+        mvc.perform(get("/api/articles/"+TEST_ARTICLE_1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.slug").value(TEST_ARTICLE_1))
+                .andExpect(jsonPath("$.article.title").value("test article 1"))
+                .andExpect(jsonPath("$.article.description").value("this is test article description"))
+                .andExpect(jsonPath("$.article.body").value("test article body"))
+                .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.article.author.username").value("test05"))
+                .andExpect(jsonPath("$.article.author.following").value(false));
+    }
+
+    @Test
+    @DisplayName("글 조회 테스트. 로그인 정보 있음")
+    public void get_article_login_fallow_false(@Autowired MockMvc mvc) throws Exception {
+        mvc.perform(get("/api/articles/"+TEST_ARTICLE_1).header(AUTHORIZATION,test01tokenHeader))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.slug").value(TEST_ARTICLE_1))
+                .andExpect(jsonPath("$.article.title").value("test article 1"))
+                .andExpect(jsonPath("$.article.description").value("this is test article description"))
+                .andExpect(jsonPath("$.article.body").value("test article body"))
+                .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.article.author.username").value("test05"))
+                .andExpect(jsonPath("$.article.author.following").value(false));
+    }
+
+    @Test
+    @DisplayName("글 조회 테스트. 구독자.")
+    public void get_article_login_fallow_true(@Autowired MockMvc mvc) throws Exception {
+        Member member = memberRepository.findByEmail("test01@realworld.com").get();
+
+        Member followMember = memberRepository.findMemberByUsername("test05");
+
+        //팔로우
+        Follow follow = Follow.builder()
+                .memberId(member.getId())
+                .followMemberId(followMember.getId())
+                .build();
+
+        profileRepository.save(follow);
+
+        mvc.perform(get("/api/articles/"+TEST_ARTICLE_1).header(AUTHORIZATION,test01tokenHeader))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.slug").value(TEST_ARTICLE_1))
+                .andExpect(jsonPath("$.article.title").value("test article 1"))
+                .andExpect(jsonPath("$.article.description").value("this is test article description"))
+                .andExpect(jsonPath("$.article.body").value("test article body"))
+                .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.article.author.username").value("test05"))
+                .andExpect(jsonPath("$.article.author.following").value(true));
     }
 
 
