@@ -21,22 +21,29 @@ public class ProfileServiceImpl implements ProfileService{
 
     @Override
     public boolean isFollow(String userEmail, String username) {
-        Member member = memberRepository.findMemberByUsername(username);
-        Optional<Follow> optional = profileRepository.findByMemberId(member.getId());
+        if(userEmail == null){
+            return false;
+        }
+        Member member = memberRepository.findByEmail(userEmail).get();
+        Member followMember = memberRepository.findMemberByUsername(username);
+        Optional<Follow> optional = profileRepository.findByMemberIdAndFollowUsername(member.getId(), followMember.getId());
         return optional.isEmpty() ? false : true;
     }
 
     @Override
     public void followUser(String loginEmail, String username) {
         Member member = memberRepository.findMemberByUsername(username);
+        Member followMember = memberRepository.findMemberByUsername(username);
 
-        Optional<Follow> optional = profileRepository.findByMemberIdAndFollowUsername(member.getId(), username);
+        Optional<Follow> optional = profileRepository.findByMemberIdAndFollowUsername(member.getId(), followMember.getId());
         if(!optional.isEmpty()){
             throw new DuplicateException("username");
         }
+
+
         Follow follow = Follow.builder()
                 .memberId(member.getId())
-                .username(username)
+                .followMemberId(followMember.getId())
                 .build();
         profileRepository.save(follow);
     }
@@ -44,8 +51,9 @@ public class ProfileServiceImpl implements ProfileService{
     @Override
     public void unfollowUser(String loginEmail, String username) {
         Member member = memberRepository.findMemberByUsername(username);
+        Member followMember = memberRepository.findMemberByUsername(username);
 
-        Follow selectFollow = profileRepository.findByMemberIdAndFollowUsername(member.getId(), username).get();
+        Follow selectFollow = profileRepository.findByMemberIdAndFollowUsername(member.getId(), followMember.getId()).get();
         profileRepository.delete(selectFollow);
     }
 

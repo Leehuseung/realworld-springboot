@@ -154,7 +154,8 @@ class MemberControllerTest extends BaseControllerTest{
 
     /**
      * 유저 업데이트시 Follow테이블의 Username도 업데이트돼야한다.
-     * test03을 test20으로 업데이트한뒤 여전히 test01이 구독중인지 확인한다.
+     * test03을 test20으로 업데이트
+     * test01을 이 여전히 바뀐 test20을 구독중인지?
      * @param mvc
      * @throws Exception
      */
@@ -174,7 +175,7 @@ class MemberControllerTest extends BaseControllerTest{
                 .andExpect(jsonPath("$.user.bio").value("I like to skateboard"))
                 .andExpect(jsonPath("$.user.image").value("https://i.stack.imgur.com/xHWG8.jpg"));
 
-        mvc.perform(get("/api/profiles/test20").header(AUTHORIZATION,test03tokenHeader))
+        mvc.perform(get("/api/profiles/test20").header(AUTHORIZATION,test01tokenHeader))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.profile.username").value("test20"))
                 .andExpect(jsonPath("$.profile.bio").isNotEmpty())

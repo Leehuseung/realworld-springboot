@@ -73,9 +73,16 @@ public class BaseControllerTest {
 
             memberRepository.save(member);
 
+
+        }
+
+        for (int i = 0; i < 10; i++) {
+            Member member = memberRepository.findMemberByUsername(TEST+ "0" +i);
+            Member followMember = memberRepository.findMemberByUsername(FOLLOWED_USER);
+            //팔로우
             Follow follow = Follow.builder()
                     .memberId(member.getId())
-                    .username(FOLLOWED_USER)
+                    .followMemberId(followMember.getId())
                     .build();
 
             profileRepository.save(follow);

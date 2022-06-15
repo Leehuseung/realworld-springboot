@@ -11,12 +11,8 @@ public interface ProfileRepository extends JpaRepository<Follow, String> {
 
     Optional<Follow> findByMemberId(Long memberId);
 
-    @Query("select f from Follow f where f.memberId = :memberId and f.username = :username")
-    Optional<Follow> findByMemberIdAndFollowUsername(Long memberId,String username);
-
-    @Query("update Follow f set f.username = :change_username where f.username = :username")
-    @Modifying
-    int updateFollowUsername(String username, String change_username);
+    @Query("select f from Follow f where f.memberId = :memberId and f.followMemberId = :followMemberId")
+    Optional<Follow> findByMemberIdAndFollowUsername(Long memberId,Long followMemberId);
 
 
 
