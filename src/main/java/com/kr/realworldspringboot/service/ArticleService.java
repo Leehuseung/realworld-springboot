@@ -15,6 +15,8 @@ public interface ArticleService {
 
     Article getArticleBySlug(String slug);
 
+    void deleteArticle(long id);
+
     default Article createDtoToEntity(ArticleCreateDTO articleCreateDTO) {
         LocalDateTime date = LocalDateTime.now();
         Article article = Article.builder()

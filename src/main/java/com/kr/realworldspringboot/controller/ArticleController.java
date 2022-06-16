@@ -84,6 +84,20 @@ public class ArticleController {
         return new ResultArticle(articleCreateResponse);
     }
 
+    @DeleteMapping("/api/articles/{slug}")
+    public void deleteArticle(@RequestHeader Map<String, Object> requestHeader, @PathVariable String slug) {
+        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
+
+        Member member = memberService.selectByEmail(email);
+        Article article = articleService.getArticleBySlug(slug);
+
+        if(member.getId() == article.getMember().getId()){
+            articleService.deleteArticle(article.getId());
+        } else {
+            throw new IllegalArgumentException("not authorized");
+        }
+    }
+
     @Data
     @AllArgsConstructor
     static class ResultArticle {

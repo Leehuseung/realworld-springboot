@@ -11,7 +11,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -96,7 +98,22 @@ class ArticleControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.article.author.username").value("test05"))
                 .andExpect(jsonPath("$.article.author.following").value(true));
     }
+    
+    @Test
+    @DisplayName("글 삭제 테스트")
+    public void delete_article(@Autowired MockMvc mvc) throws Exception {
+        mvc.perform(delete("/api/articles/"+TEST_ARTICLE_1).header(AUTHORIZATION,test05tokenHeader))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 
+    //TODO Controller단의 에러 검증 어떻게 할건지?
+//    @Test
+//    @DisplayName("다른사람의 글 삭제 테스트")
+//    public void delete_article_other_user(@Autowired MockMvc mvc) throws Exception {
+//        mvc.perform(delete("/api/articles/"+TEST_ARTICLE_1).header(AUTHORIZATION,test01tokenHeader))
+//                .andExpect(status().is4xxClientError());
+//    }
 
 
 }

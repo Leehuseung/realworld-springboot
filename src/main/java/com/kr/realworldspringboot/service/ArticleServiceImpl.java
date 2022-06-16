@@ -33,5 +33,11 @@ public class ArticleServiceImpl implements ArticleService{
         return articleRepository.findBySlug(slug);
     }
 
+    @Override
+    public void deleteArticle(long id) {
+        Article article = articleRepository.findById(id).get();
+        articleRepository.delete(article);
+    }
+
 
 }
