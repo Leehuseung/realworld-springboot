@@ -2,6 +2,7 @@ package com.kr.realworldspringboot.controller;
 
 import com.kr.realworldspringboot.dto.ArticleCreateDTO;
 import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
+import com.kr.realworldspringboot.dto.AuthorDTO;
 import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.service.ArticleService;
@@ -35,13 +36,13 @@ public class ArticleController {
         Article article = articleService.getArticleBySlug(slug);
         Member member = article.getMember();
 
-        Author build = Author.builder()
+        AuthorDTO build = AuthorDTO.builder()
                 .username(member.getUsername())
                 .bio(member.getBio())
                 .image(member.getImage())
                 .following(profileService.isFollow(email, article.getMember().getUsername()))
                 .build();
-        Author author = build;
+        AuthorDTO author = build;
 
         ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
                 .author(author)
@@ -64,13 +65,13 @@ public class ArticleController {
         Long id = articleService.createArticle(articleCreateDTO,member);
         Article article = articleService.getArticle(id);
 
-        Author build = Author.builder()
+        AuthorDTO build = AuthorDTO.builder()
                 .username(member.getUsername())
                 .bio(member.getBio())
                 .image(member.getImage())
                 .following(profileService.isFollow(email, member.getUsername()))
                 .build();
-        Author author = build;
+        AuthorDTO author = build;
 
         ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
                 .author(author)
@@ -112,13 +113,13 @@ public class ArticleController {
 
             Article updtaeArticle = articleService.getArticle(id);
 
-            Author build = Author.builder()
+            AuthorDTO build = AuthorDTO.builder()
                     .username(member.getUsername())
                     .bio(member.getBio())
                     .image(member.getImage())
                     .following(false)
                     .build();
-            Author author = build;
+            AuthorDTO author = build;
 
             ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
                     .author(author)
@@ -155,16 +156,7 @@ public class ArticleController {
 //        List//TODO tagList 구현
 //        boolean favorited; //TODO favorite 구현
 //        int favoriteCount; //TODO favoritesCount 구현
-        Author author;
+        AuthorDTO author;
     }
 
-    @Data
-    @AllArgsConstructor
-    @Builder
-    static class Author {
-        String username;
-        String bio;
-        String image;
-        boolean following;
-    }
 }
