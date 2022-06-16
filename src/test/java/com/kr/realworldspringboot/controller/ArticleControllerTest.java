@@ -45,11 +45,11 @@ class ArticleControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("기사 조회 테스트. 로그인 정보 없음.")
     public void get_article_login(@Autowired MockMvc mvc) throws Exception {
-        mvc.perform(get("/api/articles/"+TEST_ARTICLE_1))
+        mvc.perform(get("/api/articles/"+TEST_ARTICLE_1_SLUG))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.article.slug").value(TEST_ARTICLE_1))
-                .andExpect(jsonPath("$.article.title").value("test article 1"))
-                .andExpect(jsonPath("$.article.description").value("this is test article description"))
+                .andExpect(jsonPath("$.article.slug").value(TEST_ARTICLE_1_SLUG))
+                .andExpect(jsonPath("$.article.title").value(TEST_ARTICLE_1_TITLE))
+                .andExpect(jsonPath("$.article.description").value(TEST_ARTICLE_1_DESCRIPTION))
                 .andExpect(jsonPath("$.article.body").value("test article body"))
                 .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
@@ -60,12 +60,12 @@ class ArticleControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("글 조회 테스트. 로그인 정보 있음")
     public void get_article_login_fallow_false(@Autowired MockMvc mvc) throws Exception {
-        mvc.perform(get("/api/articles/"+TEST_ARTICLE_1).header(AUTHORIZATION,test01tokenHeader))
+        mvc.perform(get("/api/articles/"+TEST_ARTICLE_1_SLUG).header(AUTHORIZATION,test01tokenHeader))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.article.slug").value(TEST_ARTICLE_1))
-                .andExpect(jsonPath("$.article.title").value("test article 1"))
-                .andExpect(jsonPath("$.article.description").value("this is test article description"))
-                .andExpect(jsonPath("$.article.body").value("test article body"))
+                .andExpect(jsonPath("$.article.slug").value(TEST_ARTICLE_1_SLUG))
+                .andExpect(jsonPath("$.article.title").value(TEST_ARTICLE_1_TITLE))
+                .andExpect(jsonPath("$.article.description").value(TEST_ARTICLE_1_DESCRIPTION))
+                .andExpect(jsonPath("$.article.body").value(TEST_ARTICLE_1_BODY))
                 .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.author.username").value("test05"))
@@ -87,12 +87,12 @@ class ArticleControllerTest extends BaseControllerTest {
 
         profileRepository.save(follow);
 
-        mvc.perform(get("/api/articles/"+TEST_ARTICLE_1).header(AUTHORIZATION,test01tokenHeader))
+        mvc.perform(get("/api/articles/"+TEST_ARTICLE_1_SLUG).header(AUTHORIZATION,test01tokenHeader))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.article.slug").value(TEST_ARTICLE_1))
-                .andExpect(jsonPath("$.article.title").value("test article 1"))
-                .andExpect(jsonPath("$.article.description").value("this is test article description"))
-                .andExpect(jsonPath("$.article.body").value("test article body"))
+                .andExpect(jsonPath("$.article.slug").value(TEST_ARTICLE_1_SLUG))
+                .andExpect(jsonPath("$.article.title").value(TEST_ARTICLE_1_TITLE))
+                .andExpect(jsonPath("$.article.description").value(TEST_ARTICLE_1_DESCRIPTION))
+                .andExpect(jsonPath("$.article.body").value(TEST_ARTICLE_1_BODY))
                 .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.author.username").value("test05"))
@@ -102,7 +102,7 @@ class ArticleControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("글 삭제 테스트")
     public void delete_article(@Autowired MockMvc mvc) throws Exception {
-        mvc.perform(delete("/api/articles/"+TEST_ARTICLE_1).header(AUTHORIZATION,test05tokenHeader))
+        mvc.perform(delete("/api/articles/"+TEST_ARTICLE_1_SLUG).header(AUTHORIZATION,test05tokenHeader))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -114,6 +114,25 @@ class ArticleControllerTest extends BaseControllerTest {
 //        mvc.perform(delete("/api/articles/"+TEST_ARTICLE_1).header(AUTHORIZATION,test01tokenHeader))
 //                .andExpect(status().is4xxClientError());
 //    }
+
+    @Test
+    @DisplayName("글 수정 테스트")
+    public void update_article(@Autowired MockMvc mvc) throws Exception {
+        //given
+        String body = "{\"article\":{\"title\":\"update title\",\"description\":\"update description\",\"body\":\"update body\"}}";
+
+        mvc.perform(put("/api/articles/"+TEST_ARTICLE_1_SLUG).header(AUTHORIZATION,test05tokenHeader).contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.slug").value("update-title"))
+                .andExpect(jsonPath("$.article.title").value("update title"))
+                .andExpect(jsonPath("$.article.description").value("update description"))
+                .andExpect(jsonPath("$.article.body").value("update body"))
+                .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.article.author.username").value("test05"))
+                .andExpect(jsonPath("$.article.author.following").value(false))
+                .andDo(print());
+    }
 
 
 }

@@ -1,12 +1,15 @@
 package com.kr.realworldspringboot.service;
 
 import com.kr.realworldspringboot.dto.ArticleCreateDTO;
+import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
 import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @Log4j2
@@ -37,6 +40,18 @@ public class ArticleServiceImpl implements ArticleService{
     public void deleteArticle(long id) {
         Article article = articleRepository.findById(id).get();
         articleRepository.delete(article);
+    }
+
+    @Override
+    public Long updateArticle(Long id, ArticleUpdateDTO articleUpdateDTO) {
+        Article article = articleRepository.findById(id).get();
+        article.setTitle(articleUpdateDTO.getTitle());
+        article.setSlugify();
+        article.setDescription(articleUpdateDTO.getDescription());
+        article.setBody(articleUpdateDTO.getBody());
+        article.setUpdatedAt(LocalDateTime.now());
+        articleRepository.save(article);
+        return article.getId();
     }
 
 

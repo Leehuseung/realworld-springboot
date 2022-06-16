@@ -1,6 +1,7 @@
 package com.kr.realworldspringboot.service;
 
 import com.kr.realworldspringboot.dto.ArticleCreateDTO;
+import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
 import com.kr.realworldspringboot.dto.MemberRegisterDTO;
 import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.Member;
@@ -16,6 +17,8 @@ public interface ArticleService {
     Article getArticleBySlug(String slug);
 
     void deleteArticle(long id);
+
+    Long updateArticle(Long id, ArticleUpdateDTO articleUpdateDTO);
 
     default Article createDtoToEntity(ArticleCreateDTO articleCreateDTO) {
         LocalDateTime date = LocalDateTime.now();

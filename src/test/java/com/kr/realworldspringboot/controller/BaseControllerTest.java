@@ -47,7 +47,10 @@ public class BaseControllerTest {
 
 
     //Article
-    public static final String TEST_ARTICLE_1 = "test-article-1";
+    public static final String TEST_ARTICLE_1_SLUG = "test-article-1";
+    public static final String TEST_ARTICLE_1_TITLE = "test article 1";
+    public static final String TEST_ARTICLE_1_DESCRIPTION = "this is test article description";
+    public static final String TEST_ARTICLE_1_BODY = "test article body";
 
     @BeforeAll
     static void makeToken() throws Exception {
@@ -108,10 +111,10 @@ public class BaseControllerTest {
 
         LocalDateTime ldt = LocalDateTime.now();
         Article article = Article.builder()
-                .slug(TEST_ARTICLE_1)
-                .title("test article 1")
-                .description("this is test article description")
-                .body("test article body")
+                .slug(TEST_ARTICLE_1_SLUG)
+                .title(TEST_ARTICLE_1_TITLE)
+                .description(TEST_ARTICLE_1_DESCRIPTION)
+                .body(TEST_ARTICLE_1_BODY)
                 .createdAt(ldt)
                 .updatedAt(ldt)
                 .member(test05_member)

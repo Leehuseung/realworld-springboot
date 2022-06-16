@@ -1,6 +1,7 @@
 package com.kr.realworldspringboot.controller;
 
 import com.kr.realworldspringboot.dto.ArticleCreateDTO;
+import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
 import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.service.ArticleService;
@@ -93,6 +94,43 @@ public class ArticleController {
 
         if(member.getId() == article.getMember().getId()){
             articleService.deleteArticle(article.getId());
+        } else {
+            throw new IllegalArgumentException("not authorized");
+        }
+    }
+
+    @PutMapping("/api/articles/{slug}")
+    public ResultArticle updateArticle(@RequestHeader Map<String, Object> requestHeader
+            , @PathVariable String slug, @RequestBody @Valid ArticleUpdateDTO articleUpdateDTO) {
+        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
+
+        Member member = memberService.selectByEmail(email);
+        Article article = articleService.getArticleBySlug(slug);
+
+        if(member.getId() == article.getMember().getId()){
+            Long id = articleService.updateArticle(article.getId(),articleUpdateDTO);
+
+            Article updtaeArticle = articleService.getArticle(id);
+
+            Author build = Author.builder()
+                    .username(member.getUsername())
+                    .bio(member.getBio())
+                    .image(member.getImage())
+                    .following(false)
+                    .build();
+            Author author = build;
+
+            ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
+                    .author(author)
+                    .slug(updtaeArticle.getSlug())
+                    .title(updtaeArticle.getTitle())
+                    .description(updtaeArticle.getDescription())
+                    .body(updtaeArticle.getBody())
+                    .createdAt(updtaeArticle.getCreatedAt())
+                    .updatedAt(updtaeArticle.getUpdatedAt())
+                    .build();
+
+            return new ResultArticle(articleCreateResponse);
         } else {
             throw new IllegalArgumentException("not authorized");
         }
