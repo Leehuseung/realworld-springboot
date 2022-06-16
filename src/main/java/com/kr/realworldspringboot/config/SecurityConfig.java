@@ -28,10 +28,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public ApiCheckFilter apiCheckFilter() {
         List<String> list = new ArrayList<>();
-        list.add("/api/users/login");
-        list.add("/api/users");
-        list.add("/api/profiles/*");
-        list.add("/api/articles/*");
+        list.add("/api/users/login,post");
+        list.add("/api/users,post");
+        list.add("/api/profiles/*,get");
+        list.add("/api/articles/*,get");
         //""에 해당하는 url만 ApiCheckFilter가 동작한다.
         return new ApiCheckFilter("/**",list,jwtUtil());
     }

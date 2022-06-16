@@ -29,7 +29,7 @@ class MemberControllerTest extends BaseControllerTest{
         String body = "{\"user\":{\"email\":\""+TEST_01_REALWORLD_COM+"\",\"password\":\"1\"}}";
 
         //when
-        mvc.perform(get("/api/users/login").content(body))
+        mvc.perform(post("/api/users/login").content(body))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.user.username").value(TEST_01))
                 .andExpect(jsonPath("$.user.email").value(TEST_01_REALWORLD_COM))

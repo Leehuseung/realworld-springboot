@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Locale;
 
 @Log4j2
 public class ApiCheckFilter extends OncePerRequestFilter {
@@ -34,7 +35,10 @@ public class ApiCheckFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         for (String allowPattern : allowList) {
-            if(antPathMatcher.match(allowPattern,request.getRequestURI())){
+            String[] patternArr = allowPattern.split(",");
+            String patternUrl = patternArr[0];
+            String method = patternArr[1];
+            if(antPathMatcher.match(patternUrl,request.getRequestURI()) && request.getMethod().toLowerCase(Locale.ROOT).equals(method)){
                 filterChain.doFilter(request,response);
                 return;
             }
