@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface ProfileRepository extends JpaRepository<Follow, String> {
+public interface ProfileRepository extends JpaRepository<Follow, Long> {
 
     Optional<Follow> findByMemberId(Long memberId);
 
