@@ -52,6 +52,13 @@ public class BaseControllerTest {
     public static final String TEST_ARTICLE_1_DESCRIPTION = "this is test article description";
     public static final String TEST_ARTICLE_1_BODY = "test article body";
 
+    public static final String SLUG = "slug";
+    public static final String TITLE = "title";
+    public static final String DESCRIPTION = "description";
+    public static final String BODY = "body";
+
+
+
     @BeforeAll
     static void makeToken() throws Exception {
         jwtUtil = new JWTUtil();
@@ -64,39 +71,37 @@ public class BaseControllerTest {
 
     /**
      * 기초 데이터
-     * test01@realworld.com ~ test10@realworld.com 까지
+     * test01@realworld.com ~ test09@realworld.com 까지
      * 비밀번호 1
      *
      * 모두 test03을 구독하고있음
      *
-     * test05가 게시글을 썼음.
+     * 각자 글을 갖고 있음. test05 별도.
+     * 
+     * 
      *
      */
     @BeforeEach
     void defaultInsert(){
-        //User
-        for (int i = 0; i < 10; i++) {
-            Member member = Member.builder()
-                    .username(TEST+ "0" +i)
-                    .password("$2a$10$OkMhBM2HZi0beVdSpuatRu7ACdTdQM/qIttvPcNWnTtsb9QJOXazG")
-                    .email("test0"+i+"@realworld.com")
-                    .build();
+        int userCnt = 10;
 
-            memberRepository.save(member);
-
-
+        //Insert User
+        for (int i = 0; i < userCnt; i++) {
+            String username = "test0"+i;
+            insertMember(username);
         }
 
-        for (int i = 0; i < 10; i++) {
-            Member member = memberRepository.findMemberByUsername(TEST+ "0" +i);
-            Member followMember = memberRepository.findMemberByUsername(FOLLOWED_USER);
-            //팔로우
-            Follow follow = Follow.builder()
-                    .memberId(member.getId())
-                    .followMemberId(followMember.getId())
-                    .build();
+        //Insert Follow
+        for (int i = 0; i < userCnt; i++) {
+            String username = "test0"+i;
+            insertFollow(username,FOLLOWED_USER);
+        }
 
-            profileRepository.save(follow);
+        //Insert Article
+        for (int i = 0; i < userCnt; i++) {
+            String username = "test0"+i;
+            insertArticle(username,i);
+            Member member = memberRepository.findMemberByUsername(username);
         }
 
         Member member = Member.builder()
@@ -124,10 +129,50 @@ public class BaseControllerTest {
 
     }
 
+    private void insertArticle(String username, int i) {
+        Member member = memberRepository.findByEmail("test05@realworld.com").get();
+
+        LocalDateTime ldt = LocalDateTime.now();
+        Article article = Article.builder()
+                .slug(SLUG+i)
+                .title(TITLE+i)
+                .description(DESCRIPTION+i)
+                .body(BODY+i)
+                .createdAt(ldt)
+                .updatedAt(ldt)
+                .member(member)
+                .build();
+
+        articleRepository.save(article);
+    }
+
+    private void insertFollow(String username, String followUsername) {
+
+        Member member = memberRepository.findMemberByUsername(username);
+        Member followMember = memberRepository.findMemberByUsername(followUsername);
+        //팔로우
+        Follow follow = Follow.builder()
+                .memberId(member.getId())
+                .followMemberId(followMember.getId())
+                .build();
+
+        profileRepository.save(follow);
+    }
+
     @AfterEach
     void after_delete(){
         articleRepository.deleteAll();
         memberRepository.deleteAll();
         profileRepository.deleteAll();
+    }
+
+    void insertMember(String username){
+        Member member = Member.builder()
+                .username(username)
+                .password("$2a$10$OkMhBM2HZi0beVdSpuatRu7ACdTdQM/qIttvPcNWnTtsb9QJOXazG")
+                .email(username+"@realworld.com")
+                .build();
+
+        memberRepository.save(member);
     }
 }
