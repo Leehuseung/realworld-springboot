@@ -2,6 +2,7 @@ package com.kr.realworldspringboot.controller;
 
 import com.kr.realworldspringboot.entity.Follow;
 import com.kr.realworldspringboot.entity.Member;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class ProfileControllerTest extends BaseControllerTest {
+
+    @BeforeEach
+    void insertTestUser() throws Exception{
+        Member member = Member.builder()
+                .username(TEST+ "11")
+                .password("$2a$10$OkMhBM2HZi0beVdSpuatRu7ACdTdQM/qIttvPcNWnTtsb9QJOXazG")
+                .email("test11@realworld.com")
+                .build();
+
+        memberRepository.save(member);
+    }
 
     @Test
     @DisplayName("follow 기본값 insert 확인")

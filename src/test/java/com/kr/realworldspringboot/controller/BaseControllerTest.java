@@ -106,50 +106,43 @@ public class BaseControllerTest {
         for (int i = 0; i < userCnt; i++) {
             String username = "test0"+i;
             insertArticle(username,i);
-            Member member = memberRepository.findMemberByUsername(username);
         }
 
         for (int i = 0; i < userCnt; i++) {
             insertComment("slug"+i,"comment_body"+i);
         }
 
+    }
+
+    @AfterEach
+    void after_delete(){
+        commentRepository.deleteAll();
+        articleRepository.deleteAll();
+        memberRepository.deleteAll();
+        profileRepository.deleteAll();
+    }
+
+    void insertMember(String username){
         Member member = Member.builder()
-                .username(TEST+ "11")
+                .username(username)
                 .password("$2a$10$OkMhBM2HZi0beVdSpuatRu7ACdTdQM/qIttvPcNWnTtsb9QJOXazG")
-                .email("test11@realworld.com")
+                .email(username+"@realworld.com")
                 .build();
 
         memberRepository.save(member);
-
-        Member test05_member = memberRepository.findByEmail("test05@realworld.com").get();
-
-        LocalDateTime ldt = LocalDateTime.now();
-        Article article = Article.builder()
-                .slug(TEST_ARTICLE_1_SLUG)
-                .title(TEST_ARTICLE_1_TITLE)
-                .description(TEST_ARTICLE_1_DESCRIPTION)
-                .body(TEST_ARTICLE_1_BODY)
-                .createdAt(ldt)
-                .updatedAt(ldt)
-                .member(test05_member)
-                .build();
-
-        articleRepository.save(article);
-
     }
 
-    private void insertComment(String slug, String body) {
-        Article article = articleRepository.findBySlug(slug);
-        LocalDateTime ldt = LocalDateTime.now();
-        Comment comment = Comment.builder()
-                .id(article.getId())
-                .createdAt(ldt)
-                .updatedAt(ldt)
-                .body(body)
-                .article(article)
+    private void insertFollow(String username, String followUsername) {
+
+        Member member = memberRepository.findMemberByUsername(username);
+        Member followMember = memberRepository.findMemberByUsername(followUsername);
+        //팔로우
+        Follow follow = Follow.builder()
+                .memberId(member.getId())
+                .followMemberId(followMember.getId())
                 .build();
 
-        commentRepository.save(comment);
+        profileRepository.save(follow);
     }
 
     private void insertArticle(String username, int i) {
@@ -169,34 +162,17 @@ public class BaseControllerTest {
         articleRepository.save(article);
     }
 
-    private void insertFollow(String username, String followUsername) {
-
-        Member member = memberRepository.findMemberByUsername(username);
-        Member followMember = memberRepository.findMemberByUsername(followUsername);
-        //팔로우
-        Follow follow = Follow.builder()
-                .memberId(member.getId())
-                .followMemberId(followMember.getId())
+    private void insertComment(String slug, String body) {
+        Article article = articleRepository.findBySlug(slug);
+        LocalDateTime ldt = LocalDateTime.now();
+        Comment comment = Comment.builder()
+                .id(article.getId())
+                .createdAt(ldt)
+                .updatedAt(ldt)
+                .body(body)
+                .article(article)
                 .build();
 
-        profileRepository.save(follow);
-    }
-
-    @AfterEach
-    void after_delete(){
-        commentRepository.deleteAll();
-        articleRepository.deleteAll();
-        memberRepository.deleteAll();
-        profileRepository.deleteAll();
-    }
-
-    void insertMember(String username){
-        Member member = Member.builder()
-                .username(username)
-                .password("$2a$10$OkMhBM2HZi0beVdSpuatRu7ACdTdQM/qIttvPcNWnTtsb9QJOXazG")
-                .email(username+"@realworld.com")
-                .build();
-
-        memberRepository.save(member);
+        commentRepository.save(comment);
     }
 }

@@ -1,12 +1,16 @@
 package com.kr.realworldspringboot.controller;
 
+import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.Follow;
 import com.kr.realworldspringboot.entity.Member;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -19,6 +23,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 class ArticleControllerTest extends BaseControllerTest {
+
+    @BeforeEach
+    void insertTestArticle() throws Exception{
+        Member member = Member.builder()
+                .username(TEST+ "11")
+                .password("$2a$10$OkMhBM2HZi0beVdSpuatRu7ACdTdQM/qIttvPcNWnTtsb9QJOXazG")
+                .email("test11@realworld.com")
+                .build();
+
+        memberRepository.save(member);
+
+        Member test05_member = memberRepository.findByEmail("test05@realworld.com").get();
+
+        LocalDateTime ldt = LocalDateTime.now();
+        Article article = Article.builder()
+                .slug(TEST_ARTICLE_1_SLUG)
+                .title(TEST_ARTICLE_1_TITLE)
+                .description(TEST_ARTICLE_1_DESCRIPTION)
+                .body(TEST_ARTICLE_1_BODY)
+                .createdAt(ldt)
+                .updatedAt(ldt)
+                .member(test05_member)
+                .build();
+
+        articleRepository.save(article);
+    }
 
     @Test
     @DisplayName("글 등록 테스트")
