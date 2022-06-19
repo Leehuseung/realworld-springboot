@@ -109,7 +109,7 @@ public class BaseControllerTest {
         }
 
         for (int i = 0; i < userCnt; i++) {
-            insertComment("slug"+i,"comment_body"+i);
+            insertComment("slug"+i,"comment_body"+i,i);
         }
 
     }
@@ -162,7 +162,8 @@ public class BaseControllerTest {
         articleRepository.save(article);
     }
 
-    private void insertComment(String slug, String body) {
+    private void insertComment(String slug, String body,int i) {
+        Member member = memberRepository.findMemberByUsername("test0"+i);
         Article article = articleRepository.findBySlug(slug);
         LocalDateTime ldt = LocalDateTime.now();
         Comment comment = Comment.builder()
@@ -171,6 +172,7 @@ public class BaseControllerTest {
                 .updatedAt(ldt)
                 .body(body)
                 .article(article)
+                .memberId(member.getId())
                 .build();
 
         commentRepository.save(comment);

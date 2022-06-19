@@ -49,7 +49,7 @@ public class CommentController {
         if(member.getId() == article.getMember().getId()){
 
             Comment comment = commentService.createDtoToEntity(commentRegisterDTO);
-
+            comment.setMemberId(member.getId());
             comment.setArticle(article);
 
             Long id = commentService.addComment(comment);
@@ -85,9 +85,9 @@ public class CommentController {
 
         Member member = memberService.selectByEmail(email);
 
-        Article article = articleService.getArticleBySlug(slug);
+        Comment comment = commentService.findById(id);
 
-        if(member.getId() == article.getMember().getId()){
+        if(member.getId().equals(comment.getMemberId())){
             commentService.deleteComment(id);
         } else {
             throw new IllegalArgumentException("not authorized");

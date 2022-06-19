@@ -2,6 +2,7 @@ package com.kr.realworldspringboot.controller;
 
 import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.Comment;
+import com.kr.realworldspringboot.entity.Member;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

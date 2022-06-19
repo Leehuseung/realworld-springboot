@@ -21,6 +21,7 @@ public class Comment {
     private String body;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long memberId;
 
     @ManyToOne
     @JoinColumn(name = "ARTICLE_ID")
