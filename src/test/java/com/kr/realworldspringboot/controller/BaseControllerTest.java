@@ -1,6 +1,7 @@
 package com.kr.realworldspringboot.controller;
 
 import com.kr.realworldspringboot.entity.Article;
+import com.kr.realworldspringboot.entity.Comment;
 import com.kr.realworldspringboot.entity.Follow;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.repository.ArticleRepository;
@@ -108,6 +109,10 @@ public class BaseControllerTest {
             Member member = memberRepository.findMemberByUsername(username);
         }
 
+        for (int i = 0; i < userCnt; i++) {
+            insertComment("slug"+i,"comment_body"+i);
+        }
+
         Member member = Member.builder()
                 .username(TEST+ "11")
                 .password("$2a$10$OkMhBM2HZi0beVdSpuatRu7ACdTdQM/qIttvPcNWnTtsb9QJOXazG")
@@ -131,6 +136,20 @@ public class BaseControllerTest {
 
         articleRepository.save(article);
 
+    }
+
+    private void insertComment(String slug, String body) {
+        Article article = articleRepository.findBySlug(slug);
+        LocalDateTime ldt = LocalDateTime.now();
+        Comment comment = Comment.builder()
+                .id(article.getId())
+                .createdAt(ldt)
+                .updatedAt(ldt)
+                .body(body)
+                .article(article)
+                .build();
+
+        commentRepository.save(comment);
     }
 
     private void insertArticle(String username, int i) {

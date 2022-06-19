@@ -76,6 +76,24 @@ public class CommentController {
         }
     }
 
+
+    @DeleteMapping("/api/articles/{slug}/comments/{id}")
+    public void deleteComment(@RequestHeader Map<String, Object> requestHeader
+            , @PathVariable String slug, @PathVariable Long id){
+
+        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
+
+        Member member = memberService.selectByEmail(email);
+
+        Article article = articleService.getArticleBySlug(slug);
+
+        if(member.getId() == article.getMember().getId()){
+            commentService.deleteComment(id);
+        } else {
+            throw new IllegalArgumentException("not authorized");
+        }
+    }
+
     @Data
     @AllArgsConstructor
     @Builder

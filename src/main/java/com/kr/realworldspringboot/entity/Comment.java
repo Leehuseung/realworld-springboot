@@ -18,7 +18,6 @@ public class Comment {
     @Column(name = "COMMENT_ID")
     Long id;
 
-    private String slug;
     private String body;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -14,6 +14,8 @@ public interface CommentService {
 
     Comment findById(Long id);
 
+    void deleteComment(Long id);
+
     default Comment createDtoToEntity(CommentRegisterDTO commentRegisterDTO) {
         LocalDateTime date = LocalDateTime.now();
         Comment comment = Comment.builder()
