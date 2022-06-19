@@ -46,7 +46,7 @@ public class CommentController {
 
         Article article = articleService.getArticleBySlug(slug);
 
-        if(member.getId() == article.getMember().getId()){
+        if(member.getId().equals(article.getMember().getId())){
 
             Comment comment = commentService.createDtoToEntity(commentRegisterDTO);
             comment.setMemberId(member.getId());

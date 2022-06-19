@@ -108,7 +108,7 @@ public class ArticleController {
         Member member = memberService.selectByEmail(email);
         Article article = articleService.getArticleBySlug(slug);
 
-        if(member.getId() == article.getMember().getId()){
+        if(member.getId().equals(article.getMember().getId())){
             Long id = articleService.updateArticle(article.getId(),articleUpdateDTO);
 
             Article updtaeArticle = articleService.getArticle(id);
