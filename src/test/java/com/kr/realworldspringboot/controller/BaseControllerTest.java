@@ -4,6 +4,7 @@ import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.Follow;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.repository.ArticleRepository;
+import com.kr.realworldspringboot.repository.CommentRepository;
 import com.kr.realworldspringboot.repository.MemberRepository;
 import com.kr.realworldspringboot.repository.ProfileRepository;
 import com.kr.realworldspringboot.util.JWTUtil;
@@ -29,6 +30,9 @@ public class BaseControllerTest {
 
     @Autowired
     ArticleRepository articleRepository;
+
+    @Autowired
+    CommentRepository commentRepository;
 
     public static final String TEST = "test";
     public static final String TEST_01 = "test01";
@@ -130,7 +134,7 @@ public class BaseControllerTest {
     }
 
     private void insertArticle(String username, int i) {
-        Member member = memberRepository.findByEmail("test05@realworld.com").get();
+        Member member = memberRepository.findMemberByUsername(username);
 
         LocalDateTime ldt = LocalDateTime.now();
         Article article = Article.builder()
@@ -161,6 +165,7 @@ public class BaseControllerTest {
 
     @AfterEach
     void after_delete(){
+        commentRepository.deleteAll();
         articleRepository.deleteAll();
         memberRepository.deleteAll();
         profileRepository.deleteAll();
