@@ -39,7 +39,9 @@ class ArticleControllerTest extends BaseControllerTest {
 //                .andExpect(jsonPath("$.article.favorited").value("")) //TODO favorited 구현 필요
 //                .andExpect(jsonPath("$.article.favoritesCount").value("")) //TODO favoritesCount 구현 필요
                 .andExpect(jsonPath("$.article.author.username").value("test01"))
-                .andExpect(jsonPath("$.article.author.following").value(false));
+                .andExpect(jsonPath("$.article.author.following").value(false))
+                .andExpect(jsonPath("$.article.author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.article.author.image").hasJsonPath());
     }
 
     @Test
@@ -54,7 +56,9 @@ class ArticleControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.author.username").value("test05"))
-                .andExpect(jsonPath("$.article.author.following").value(false));
+                .andExpect(jsonPath("$.article.author.following").value(false))
+                .andExpect(jsonPath("$.article.author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.article.author.image").hasJsonPath());
     }
 
     @Test
@@ -69,7 +73,9 @@ class ArticleControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.author.username").value("test05"))
-                .andExpect(jsonPath("$.article.author.following").value(false));
+                .andExpect(jsonPath("$.article.author.following").value(false))
+                .andExpect(jsonPath("$.article.author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.article.author.image").hasJsonPath());
     }
 
     @Test
@@ -96,7 +102,9 @@ class ArticleControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.author.username").value("test05"))
-                .andExpect(jsonPath("$.article.author.following").value(true));
+                .andExpect(jsonPath("$.article.author.following").value(true))
+                .andExpect(jsonPath("$.article.author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.article.author.image").hasJsonPath());
     }
     
     @Test
@@ -131,6 +139,8 @@ class ArticleControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.author.username").value("test05"))
                 .andExpect(jsonPath("$.article.author.following").value(false))
+                .andExpect(jsonPath("$.article.author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.article.author.image").hasJsonPath())
                 .andDo(print());
     }
 
