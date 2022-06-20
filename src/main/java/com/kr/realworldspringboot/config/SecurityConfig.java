@@ -32,6 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         list.add("/api/users,post");
         list.add("/api/profiles/*,get");
         list.add("/api/articles/*,get");
+        list.add("/api/articles/*/comments,get");
         //""에 해당하는 url만 ApiCheckFilter가 동작한다.
         return new ApiCheckFilter("/**",list,jwtUtil());
     }

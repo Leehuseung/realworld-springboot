@@ -87,7 +87,7 @@ public class BaseControllerTest {
      *
      */
     @BeforeEach
-    void defaultInsert(){
+    protected void defaultInsert(){
         int userCnt = 10;
 
         //Insert User
@@ -115,14 +115,14 @@ public class BaseControllerTest {
     }
 
     @AfterEach
-    void after_delete(){
+    protected void after_delete(){
         commentRepository.deleteAll();
         articleRepository.deleteAll();
         memberRepository.deleteAll();
         profileRepository.deleteAll();
     }
 
-    void insertMember(String username){
+    protected void insertMember(String username){
         Member member = Member.builder()
                 .username(username)
                 .password("$2a$10$OkMhBM2HZi0beVdSpuatRu7ACdTdQM/qIttvPcNWnTtsb9QJOXazG")
@@ -132,7 +132,7 @@ public class BaseControllerTest {
         memberRepository.save(member);
     }
 
-    private void insertFollow(String username, String followUsername) {
+    protected void insertFollow(String username, String followUsername) {
 
         Member member = memberRepository.findMemberByUsername(username);
         Member followMember = memberRepository.findMemberByUsername(followUsername);
@@ -145,7 +145,7 @@ public class BaseControllerTest {
         profileRepository.save(follow);
     }
 
-    private void insertArticle(String username, int i) {
+    protected void insertArticle(String username, int i) {
         Member member = memberRepository.findMemberByUsername(username);
 
         LocalDateTime ldt = LocalDateTime.now();
@@ -162,7 +162,7 @@ public class BaseControllerTest {
         articleRepository.save(article);
     }
 
-    private void insertComment(String slug, String body,int i) {
+    protected void insertComment(String slug, String body, int i) {
         Member member = memberRepository.findMemberByUsername("test0"+i);
         Article article = articleRepository.findBySlug(slug);
         LocalDateTime ldt = LocalDateTime.now();
