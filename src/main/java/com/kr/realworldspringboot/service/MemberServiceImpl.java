@@ -23,7 +23,7 @@ public class MemberServiceImpl implements MemberService{
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public String registerMember(MemberRegisterDTO memberRegisterDTO) {
+    public Long registerMember(MemberRegisterDTO memberRegisterDTO) {
         Member member = regiDtoToEntity(memberRegisterDTO);
 
         Optional<Member> findByEmailMember = memberRepository.findByEmail(member.getEmail());
@@ -39,17 +39,17 @@ public class MemberServiceImpl implements MemberService{
         member.setPassword(passwordEncoder.encode(member.getPassword()));
 
         memberRepository.save(member);
-        return member.getEmail();
+        return member.getId();
     }
 
     @Override
-    public Member selectMemberById(String id) {
-        Optional<Member> member = memberRepository.findByEmail(id);
+    public Member selectMemberById(Long id) {
+        Optional<Member> member = memberRepository.findById(id);
         return member.get();
     }
 
     @Override
-    public String updateMember(String email,MemberUpdateDTO memberUpdateDTO) {
+    public Long updateMember(String email,MemberUpdateDTO memberUpdateDTO) {
 
         Member member = memberRepository.findByEmail(email).get();
         member.setEmail(memberUpdateDTO.getEmail());
@@ -58,7 +58,7 @@ public class MemberServiceImpl implements MemberService{
         member.setBio(memberUpdateDTO.getBio());
         memberRepository.save(member);
 
-        return member.getEmail();
+        return member.getId();
     }
 
     @Override

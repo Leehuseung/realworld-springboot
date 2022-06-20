@@ -6,11 +6,11 @@ import com.kr.realworldspringboot.entity.Member;
 
 public interface MemberService {
 
-    String registerMember(MemberRegisterDTO memberRegisterDTO);
+    Long registerMember(MemberRegisterDTO memberRegisterDTO);
 
-    Member selectMemberById(String id);
+    Member selectMemberById(Long id);
 
-    String updateMember(String email,MemberUpdateDTO memberUpdateDTO);
+    Long updateMember(String email,MemberUpdateDTO memberUpdateDTO);
 
     Member selectMemberByUsername(String username);
 

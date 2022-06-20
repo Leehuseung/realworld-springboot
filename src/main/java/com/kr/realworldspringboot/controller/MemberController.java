@@ -26,7 +26,7 @@ public class MemberController {
     @PostMapping("/api/users")
     public ResultMember registerMember(@RequestBody @Valid MemberRegisterDTO memberRegisterDTO){
 
-        String id = memberService.registerMember(memberRegisterDTO);
+        Long id = memberService.registerMember(memberRegisterDTO);
         Member member = memberService.selectMemberById(id);
 
         MemberRegisterResponse memberRegisterResponse = MemberRegisterResponse.builder()
@@ -44,7 +44,7 @@ public class MemberController {
         String token = jwtUtil.getToken((String)requestHeader.get("authorization"));
         String email = jwtUtil.validateAndExtract(token);
 
-        Member member = memberService.selectMemberById(email);
+        Member member = memberService.selectByEmail(email);
 
         MemberRegisterResponse memberRegisterResponse = MemberRegisterResponse.builder()
                 .email(member.getEmail())
@@ -61,7 +61,7 @@ public class MemberController {
     public ResultMember updateMember(@RequestHeader Map<String, Object> requestHeader,@RequestBody @Valid MemberUpdateDTO memberUpdateDTO){
 
         String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
-        String id = memberService.updateMember(email,memberUpdateDTO);
+        Long id = memberService.updateMember(email,memberUpdateDTO);
         Member member = memberService.selectMemberById(id);
 
         MemberRegisterResponse memberRegisterResponse = MemberRegisterResponse.builder()
