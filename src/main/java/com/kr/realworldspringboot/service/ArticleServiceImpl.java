@@ -77,6 +77,9 @@ public class ArticleServiceImpl implements ArticleService{
     @Override
     public void deleteArticle(long id) {
         Article article = articleRepository.findById(id).get();
+        for (int i = 0; i < article.getArticleTags().size(); i++) {
+            articleTagRepository.delete(article.getArticleTags().get(i));
+        }
         articleRepository.delete(article);
     }
 
