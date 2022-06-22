@@ -1,8 +1,7 @@
 package com.kr.realworldspringboot.controller;
 
-import com.kr.realworldspringboot.entity.Article;
-import com.kr.realworldspringboot.entity.Follow;
-import com.kr.realworldspringboot.entity.Member;
+import com.kr.realworldspringboot.entity.*;
+import com.kr.realworldspringboot.repository.ArticleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,13 +47,39 @@ class ArticleControllerTest extends BaseControllerTest {
                 .build();
 
         articleRepository.save(article);
+
+        Tag tagA = Tag.builder()
+                .name("tagA")
+                .build();
+
+        tagRepository.save(tagA);
+
+        Tag tagB = Tag.builder()
+                .name("tagB")
+                .build();
+
+        tagRepository.save(tagB);
+
+        ArticleTag articleTagA = ArticleTag.builder()
+                .tag(tagA)
+                .article(article)
+                .build();
+
+        articleTagRepository.save(articleTagA);
+
+        ArticleTag articleTagB = ArticleTag.builder()
+                .tag(tagB)
+                .article(article)
+                .build();
+
+        articleTagRepository.save(articleTagB);
     }
 
     @Test
     @DisplayName("글 등록 테스트")
     public void create_article(@Autowired MockMvc mvc) throws Exception {
         //given
-        String body = "{\"article\":{\"title\":\"How to train your dragon\",\"description\":\"Ever wonder how?\",\"body\":\"You have to believe\",\"tagList\":[\"reactjs\",\"angularjs\",\"dragons\"]}}";
+        String body = "{\"article\":{\"title\":\"How to train your dragon\",\"description\":\"Ever wonder how?\",\"body\":\"You have to believe\",\"tagList\":[\"tagA\",\"tagB\"]}}";
         
         //then
         mvc.perform(post("/api/articles").header(AUTHORIZATION,test01tokenHeader).contentType(MediaType.APPLICATION_JSON).content(body))
@@ -63,7 +88,8 @@ class ArticleControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.article.title").value("How to train your dragon"))
                 .andExpect(jsonPath("$.article.description").value("Ever wonder how?"))
                 .andExpect(jsonPath("$.article.body").value("You have to believe"))
-//                .andExpect(jsonPath("$.article.tag").) //TODO TAG 구현 필요.
+                .andExpect(jsonPath("$.article.tagList[0]").value("tagA"))
+                .andExpect(jsonPath("$.article.tagList[1]").value("tagB"))
                 .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
 //                .andExpect(jsonPath("$.article.favorited").value("")) //TODO favorited 구현 필요
@@ -83,6 +109,8 @@ class ArticleControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.article.title").value(TEST_ARTICLE_1_TITLE))
                 .andExpect(jsonPath("$.article.description").value(TEST_ARTICLE_1_DESCRIPTION))
                 .andExpect(jsonPath("$.article.body").value("test article body"))
+                .andExpect(jsonPath("$.article.tagList[0]").value("tagA"))
+                .andExpect(jsonPath("$.article.tagList[1]").value("tagB"))
                 .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.author.username").value("test05"))

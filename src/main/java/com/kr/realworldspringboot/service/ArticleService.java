@@ -7,6 +7,7 @@ import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.Member;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public interface ArticleService {
 
@@ -28,7 +29,7 @@ public interface ArticleService {
                 .createdAt(date)
                 .updatedAt(date)
                 .body(articleCreateDTO.getBody())
-                //TODO TAG구현
+                .articleTags(new ArrayList<>())
                 .build();
 
         article.setSlugify();

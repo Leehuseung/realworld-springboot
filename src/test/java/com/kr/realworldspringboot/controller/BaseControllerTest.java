@@ -4,10 +4,7 @@ import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.Comment;
 import com.kr.realworldspringboot.entity.Follow;
 import com.kr.realworldspringboot.entity.Member;
-import com.kr.realworldspringboot.repository.ArticleRepository;
-import com.kr.realworldspringboot.repository.CommentRepository;
-import com.kr.realworldspringboot.repository.MemberRepository;
-import com.kr.realworldspringboot.repository.ProfileRepository;
+import com.kr.realworldspringboot.repository.*;
 import com.kr.realworldspringboot.util.JWTUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,6 +31,12 @@ public class BaseControllerTest {
 
     @Autowired
     CommentRepository commentRepository;
+
+    @Autowired
+    ArticleTagRepository articleTagRepository;
+
+    @Autowired
+    TagRepository tagRepository;
 
     public static final String TEST = "test";
     public static final String TEST_01 = "test01";
@@ -116,6 +119,8 @@ public class BaseControllerTest {
 
     @AfterEach
     protected void after_delete(){
+        articleTagRepository.deleteAll();
+        tagRepository.deleteAll();
         commentRepository.deleteAll();
         articleRepository.deleteAll();
         memberRepository.deleteAll();

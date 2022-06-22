@@ -4,7 +4,9 @@ import com.kr.realworldspringboot.dto.ArticleCreateDTO;
 import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
 import com.kr.realworldspringboot.dto.AuthorDTO;
 import com.kr.realworldspringboot.entity.Article;
+import com.kr.realworldspringboot.entity.ArticleTag;
 import com.kr.realworldspringboot.entity.Member;
+import com.kr.realworldspringboot.entity.Tag;
 import com.kr.realworldspringboot.service.ArticleService;
 import com.kr.realworldspringboot.service.MemberService;
 import com.kr.realworldspringboot.service.ProfileService;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -34,6 +38,7 @@ public class ArticleController {
     public ResultArticle getArticle(@RequestHeader Map<String, Object> requestHeader, @PathVariable String slug) {
         String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
         Article article = articleService.getArticleBySlug(slug);
+        List<ArticleTag> tagList = article.getArticleTags();
         Member member = article.getMember();
 
         AuthorDTO build = AuthorDTO.builder()
@@ -54,6 +59,13 @@ public class ArticleController {
                 .updatedAt(article.getUpdatedAt())
                 .build();
 
+        articleCreateResponse.setTagList(new ArrayList<>());
+
+        for (int i = 0; i < tagList.size(); i++) {
+            Tag tag = tagList.get(i).getTag();
+            articleCreateResponse.getTagList().add(tag.getName());
+        }
+
         return new ResultArticle(articleCreateResponse);
     }
 
@@ -63,7 +75,10 @@ public class ArticleController {
         Member member = memberService.selectByEmail(email);
 
         Long id = articleService.createArticle(articleCreateDTO,member);
+
         Article article = articleService.getArticle(id);
+
+        List<ArticleTag> tagList = article.getArticleTags();
 
         AuthorDTO build = AuthorDTO.builder()
                 .username(member.getUsername())
@@ -82,6 +97,12 @@ public class ArticleController {
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())
                 .build();
+        articleCreateResponse.setTagList(new ArrayList<>());
+
+        for (int i = 0; i < tagList.size(); i++) {
+            Tag tag = tagList.get(i).getTag();
+            articleCreateResponse.getTagList().add(tag.getName());
+        }
 
         return new ResultArticle(articleCreateResponse);
     }
@@ -153,7 +174,7 @@ public class ArticleController {
         String body;
         LocalDateTime createdAt;
         LocalDateTime updatedAt;
-//        List//TODO tagList 구현
+        List<String> tagList; //TODO tagList 구현
 //        boolean favorited; //TODO favorite 구현
 //        int favoriteCount; //TODO favoritesCount 구현
         AuthorDTO author;

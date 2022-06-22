@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @Data
 public class ArticleCreateDTO {
@@ -17,6 +18,8 @@ public class ArticleCreateDTO {
 
     public String getBody() { return article.getBody(); }
 
+    public List<String> getTagList(){ return article.getTagList(); }
+
     @Data
     @NoArgsConstructor
     class Article {
@@ -26,7 +29,7 @@ public class ArticleCreateDTO {
         private String description;
         @NotEmpty(message = "body")
         private String body;
-        //TODO tagList 구현 필요함..
+        private List<String> tagList;
     }
 }
 

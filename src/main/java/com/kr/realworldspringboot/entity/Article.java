@@ -1,11 +1,14 @@
 package com.kr.realworldspringboot.entity;
 
+import com.kr.realworldspringboot.repository.ArticleTagRepository;
 import lombok.*;
 
 import javax.persistence.*;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -32,7 +35,9 @@ public class Article {
     @JoinColumn(name = "MEMBER_ID")
     Member member;
 
-    //TODO comment, taglist
+    @OneToMany(mappedBy = "article")
+    List<ArticleTag> articleTags = new ArrayList<>();
+
 
 
     private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
@@ -43,5 +48,9 @@ public class Article {
         String normalized = Normalizer.normalize(nowhitespace, Normalizer.Form.NFD);
         String slug = NONLATIN.matcher(normalized).replaceAll("");
         this.slug = slug.toLowerCase(Locale.ENGLISH);
+    }
+
+    public void addArticleTag(ArticleTag articleTag){
+        articleTags.add(articleTag);
     }
 }
