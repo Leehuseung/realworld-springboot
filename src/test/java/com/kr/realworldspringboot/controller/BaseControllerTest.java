@@ -38,13 +38,18 @@ public class BaseControllerTest {
     @Autowired
     TagRepository tagRepository;
 
+    @Autowired
+    ArticleFavoriteRepository articleFavoriteRepository;
+
     public static final String TEST = "test";
     public static final String TEST_01 = "test01";
 
     protected static JWTUtil jwtUtil;
     protected static String test01token;
+    protected static String test02token;
     protected static String test05token;
     protected static String test01tokenHeader;
+    protected static String test02tokenHeader;
     protected static String test05tokenHeader;
 
     public static final String AUTHORIZATION = "authorization";
@@ -72,6 +77,9 @@ public class BaseControllerTest {
         jwtUtil = new JWTUtil();
         test01token = jwtUtil.generateToken(TEST_01_REALWORLD_COM);
         test01tokenHeader = "Bearer " + test01token;
+
+        test02token = jwtUtil.generateToken(TEST_02_REALWORLD_COM);
+        test02tokenHeader = "Bearer " + test02token;
 
         test05token = jwtUtil.generateToken(TEST_05_REALWORLD_COM);
         test05tokenHeader = "Bearer " + test05token;
@@ -119,6 +127,7 @@ public class BaseControllerTest {
 
     @AfterEach
     protected void after_delete(){
+        articleFavoriteRepository.deleteAll();
         articleTagRepository.deleteAll();
         tagRepository.deleteAll();
         commentRepository.deleteAll();

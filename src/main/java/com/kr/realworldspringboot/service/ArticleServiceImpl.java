@@ -2,16 +2,15 @@ package com.kr.realworldspringboot.service;
 
 import com.kr.realworldspringboot.dto.ArticleCreateDTO;
 import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
-import com.kr.realworldspringboot.entity.Article;
-import com.kr.realworldspringboot.entity.ArticleTag;
-import com.kr.realworldspringboot.entity.Member;
-import com.kr.realworldspringboot.entity.Tag;
+import com.kr.realworldspringboot.entity.*;
+import com.kr.realworldspringboot.repository.ArticleFavoriteRepository;
 import com.kr.realworldspringboot.repository.ArticleRepository;
 import com.kr.realworldspringboot.repository.ArticleTagRepository;
 import com.kr.realworldspringboot.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +23,7 @@ public class ArticleServiceImpl implements ArticleService{
     private final ArticleRepository articleRepository;
     private final TagRepository tagRepository;
     private final ArticleTagRepository articleTagRepository;
+    private final ArticleFavoriteRepository articleFavoriteRepository;
 
     @Override
     public Long createArticle(ArticleCreateDTO articleCreateDTO, Member member) {
@@ -75,11 +75,13 @@ public class ArticleServiceImpl implements ArticleService{
     }
 
     @Override
+    @Transactional
     public void deleteArticle(long id) {
         Article article = articleRepository.findById(id).get();
         for (int i = 0; i < article.getArticleTags().size(); i++) {
             articleTagRepository.delete(article.getArticleTags().get(i));
         }
+        articleFavoriteRepository.deleteArticleFavoritesByArticle(article);
         articleRepository.delete(article);
     }
 
@@ -95,5 +97,34 @@ public class ArticleServiceImpl implements ArticleService{
         return article.getId();
     }
 
+    @Override
+    public boolean isFavorite(Article article, Member member) {
+        if(articleFavoriteRepository.countByArticleAndMember(article,member) == 0){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public Long saveArticleFavorite(ArticleFavorite articleFavorite) {
+        if(articleFavoriteRepository.countByArticleAndMember(articleFavorite.getArticle(),articleFavorite.getMember()) == 0){
+            articleFavoriteRepository.save(articleFavorite);
+        } else {
+            articleFavorite = articleFavoriteRepository.findByArticleAndMember(articleFavorite.getArticle(),articleFavorite.getMember());
+        }
+        return articleFavorite.getId();
+    }
+
+    @Override
+    public Long countFavoriteByArticle(Article article) {
+        return articleFavoriteRepository.countByArticle(article);
+    }
+
+    @Override
+    @Transactional
+    public void deleteFavoriteByArticleAndMember(Article article, Member member) {
+        articleFavoriteRepository.deleteArticleFavoriteByArticleAndMember(article,member);
+    }
 
 }

@@ -3,10 +3,7 @@ package com.kr.realworldspringboot.controller;
 import com.kr.realworldspringboot.dto.ArticleCreateDTO;
 import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
 import com.kr.realworldspringboot.dto.AuthorDTO;
-import com.kr.realworldspringboot.entity.Article;
-import com.kr.realworldspringboot.entity.ArticleTag;
-import com.kr.realworldspringboot.entity.Member;
-import com.kr.realworldspringboot.entity.Tag;
+import com.kr.realworldspringboot.entity.*;
 import com.kr.realworldspringboot.service.ArticleService;
 import com.kr.realworldspringboot.service.MemberService;
 import com.kr.realworldspringboot.service.ProfileService;
@@ -57,6 +54,8 @@ public class ArticleController {
                 .body(article.getBody())
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())
+                .favorited(articleService.isFavorite(article,member))
+                .favoritesCount(articleService.countFavoriteByArticle(article))
                 .build();
 
         articleCreateResponse.setTagList(new ArrayList<>());
@@ -96,7 +95,10 @@ public class ArticleController {
                 .body(article.getBody())
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())
+                .favorited(articleService.isFavorite(article,member))
+                .favoritesCount(articleService.countFavoriteByArticle(article))
                 .build();
+
         articleCreateResponse.setTagList(new ArrayList<>());
 
         for (int i = 0; i < tagList.size(); i++) {
@@ -150,12 +152,101 @@ public class ArticleController {
                     .body(updtaeArticle.getBody())
                     .createdAt(updtaeArticle.getCreatedAt())
                     .updatedAt(updtaeArticle.getUpdatedAt())
+                    .favorited(articleService.isFavorite(article,member))
+                    .favoritesCount(articleService.countFavoriteByArticle(article))
                     .build();
 
             return new ResultArticle(articleCreateResponse);
         } else {
             throw new IllegalArgumentException("not authorized");
         }
+    }
+
+    @PostMapping("/api/articles/{slug}/favorite")
+    public ResultArticle favoriteArticle(@RequestHeader Map<String, Object> requestHeader, @PathVariable String slug) {
+        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
+
+        Member member = memberService.selectByEmail(email);
+        Article article = articleService.getArticleBySlug(slug);
+
+        ArticleFavorite articleFavorite = ArticleFavorite.builder()
+                .article(article)
+                .member(member)
+                .build();
+
+        articleService.saveArticleFavorite(articleFavorite);
+
+        List<ArticleTag> tagList = article.getArticleTags();
+
+        AuthorDTO build = AuthorDTO.builder()
+                .username(member.getUsername())
+                .bio(member.getBio())
+                .image(member.getImage())
+                .following(profileService.isFollow(email, article.getMember().getUsername()))
+                .build();
+        AuthorDTO author = build;
+
+        ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
+                .author(author)
+                .slug(article.getSlug())
+                .title(article.getTitle())
+                .description(article.getDescription())
+                .body(article.getBody())
+                .createdAt(article.getCreatedAt())
+                .updatedAt(article.getUpdatedAt())
+                .favorited(articleService.isFavorite(article,member))
+                .favoritesCount(articleService.countFavoriteByArticle(article))
+                .build();
+
+        articleCreateResponse.setTagList(new ArrayList<>());
+
+        for (int i = 0; i < tagList.size(); i++) {
+            Tag tag = tagList.get(i).getTag();
+            articleCreateResponse.getTagList().add(tag.getName());
+        }
+
+        return new ResultArticle(articleCreateResponse);
+    }
+
+    @DeleteMapping("/api/articles/{slug}/favorite")
+    public ResultArticle unfavoriteArticle(@RequestHeader Map<String, Object> requestHeader, @PathVariable String slug) {
+        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
+
+        Member member = memberService.selectByEmail(email);
+        Article article = articleService.getArticleBySlug(slug);
+
+        articleService.deleteFavoriteByArticleAndMember(article,member);
+
+        List<ArticleTag> tagList = article.getArticleTags();
+
+        AuthorDTO build = AuthorDTO.builder()
+                .username(member.getUsername())
+                .bio(member.getBio())
+                .image(member.getImage())
+                .following(profileService.isFollow(email, article.getMember().getUsername()))
+                .build();
+        AuthorDTO author = build;
+
+        ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
+                .author(author)
+                .slug(article.getSlug())
+                .title(article.getTitle())
+                .description(article.getDescription())
+                .body(article.getBody())
+                .createdAt(article.getCreatedAt())
+                .updatedAt(article.getUpdatedAt())
+                .favorited(articleService.isFavorite(article,member))
+                .favoritesCount(articleService.countFavoriteByArticle(article))
+                .build();
+
+        articleCreateResponse.setTagList(new ArrayList<>());
+
+        for (int i = 0; i < tagList.size(); i++) {
+            Tag tag = tagList.get(i).getTag();
+            articleCreateResponse.getTagList().add(tag.getName());
+        }
+
+        return new ResultArticle(articleCreateResponse);
     }
 
     @Data
@@ -174,9 +265,9 @@ public class ArticleController {
         String body;
         LocalDateTime createdAt;
         LocalDateTime updatedAt;
-        List<String> tagList; //TODO tagList 구현
-//        boolean favorited; //TODO favorite 구현
-//        int favoriteCount; //TODO favoritesCount 구현
+        List<String> tagList;
+        boolean favorited;
+        Long favoritesCount;
         AuthorDTO author;
     }
 

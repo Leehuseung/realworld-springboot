@@ -73,6 +73,23 @@ class ArticleControllerTest extends BaseControllerTest {
                 .build();
 
         articleTagRepository.save(articleTagB);
+
+
+        Member test02 = memberRepository.findByEmail("test02@realworld.com").get();
+        Member test03 = memberRepository.findByEmail("test03@realworld.com").get();
+        Article article1 = articleRepository.findBySlug(TEST_ARTICLE_1_SLUG);
+        insertArticleFavorite(article1,test02);
+        insertArticleFavorite(article1,test03);
+    }
+
+    void insertArticleFavorite(Article article, Member member){
+
+        ArticleFavorite af = ArticleFavorite.builder()
+                .article(article)
+                .member(member)
+                .build();
+
+        articleFavoriteRepository.save(af);
     }
 
     @Test
@@ -92,8 +109,8 @@ class ArticleControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.article.tagList[1]").value("tagB"))
                 .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
-//                .andExpect(jsonPath("$.article.favorited").value("")) //TODO favorited 구현 필요
-//                .andExpect(jsonPath("$.article.favoritesCount").value("")) //TODO favoritesCount 구현 필요
+                .andExpect(jsonPath("$.article.favorited").value(false))
+                .andExpect(jsonPath("$.article.favoritesCount").value(0))
                 .andExpect(jsonPath("$.article.author.username").value("test01"))
                 .andExpect(jsonPath("$.article.author.following").value(false))
                 .andExpect(jsonPath("$.article.author.bio").hasJsonPath())
@@ -201,6 +218,47 @@ class ArticleControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.article.author.image").hasJsonPath())
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("글 좋아요 테스트.")
+    public void favorite_article(@Autowired MockMvc mvc) throws Exception {
+
+        mvc.perform(post("/api/articles/"+TEST_ARTICLE_1_SLUG+"/favorite").header(AUTHORIZATION,test05tokenHeader))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.slug").value(TEST_ARTICLE_1_SLUG))
+                .andExpect(jsonPath("$.article.title").value(TEST_ARTICLE_1_TITLE))
+                .andExpect(jsonPath("$.article.description").value(TEST_ARTICLE_1_DESCRIPTION))
+                .andExpect(jsonPath("$.article.body").value(TEST_ARTICLE_1_BODY))
+                .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.article.favorited").value(true))
+                .andExpect(jsonPath("$.article.favoritesCount").value(3))
+                .andExpect(jsonPath("$.article.author.username").value("test05"))
+                .andExpect(jsonPath("$.article.author.following").value(false))
+                .andExpect(jsonPath("$.article.author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.article.author.image").hasJsonPath());
+    }
+
+    @Test
+    @DisplayName("글 좋아요 취소 테스트.")
+    public void unfavorite_article(@Autowired MockMvc mvc) throws Exception {
+
+        mvc.perform(delete("/api/articles/"+TEST_ARTICLE_1_SLUG+"/favorite").header(AUTHORIZATION,test02tokenHeader))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.slug").value(TEST_ARTICLE_1_SLUG))
+                .andExpect(jsonPath("$.article.title").value(TEST_ARTICLE_1_TITLE))
+                .andExpect(jsonPath("$.article.description").value(TEST_ARTICLE_1_DESCRIPTION))
+                .andExpect(jsonPath("$.article.body").value(TEST_ARTICLE_1_BODY))
+                .andExpect(jsonPath("$.article.createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.article.favorited").value(false))
+                .andExpect(jsonPath("$.article.favoritesCount").value(1))
+                .andExpect(jsonPath("$.article.author.username").value("test02"))
+                .andExpect(jsonPath("$.article.author.following").value(false))
+                .andExpect(jsonPath("$.article.author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.article.author.image").hasJsonPath());
+    }
+
 
 
 }
