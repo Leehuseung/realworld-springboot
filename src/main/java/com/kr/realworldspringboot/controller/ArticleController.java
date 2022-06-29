@@ -9,6 +9,7 @@ import com.kr.realworldspringboot.service.ArticleService;
 import com.kr.realworldspringboot.service.MemberService;
 import com.kr.realworldspringboot.service.ProfileService;
 import com.kr.realworldspringboot.util.JWTUtil;
+import com.kr.realworldspringboot.util.LocalDateUtcParser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +19,7 @@ import net.minidev.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class ArticleController {
     private final ArticleService articleService;
     private final MemberService memberService;
     private final ProfileService profileService;
+    private final LocalDateUtcParser localDateUtcParser;
 
     @GetMapping("/api/articles")
     public JSONObject getArticles(@RequestHeader Map<String, Object> requestHeader, @ModelAttribute("articleSearch") ArticleSearch articleSearch) {
@@ -60,15 +62,17 @@ public class ArticleController {
                     .title(article.getTitle())
                     .description(article.getDescription())
                     .body(article.getBody())
-                    .createdAt(article.getCreatedAt())
-                    .updatedAt(article.getUpdatedAt())
+                    .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
+                    .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
                     .favorited(articleService.isFavorite(article,member))
                     .favoritesCount(articleService.countFavoriteByArticle(article))
                     .build();
 
+            articleCreateResponse.setTagList(new ArrayList<>());
+
             responseList.add(articleCreateResponse);
         }
-
+        jsonObject.put("articlesCount",articleService.getArticleCount(articleSearch));
         jsonObject.put("articles",responseList);
 
         return jsonObject;
@@ -95,8 +99,8 @@ public class ArticleController {
                 .title(article.getTitle())
                 .description(article.getDescription())
                 .body(article.getBody())
-                .createdAt(article.getCreatedAt())
-                .updatedAt(article.getUpdatedAt())
+                .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
+                .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
                 .favorited(articleService.isFavorite(article,member))
                 .favoritesCount(articleService.countFavoriteByArticle(article))
                 .build();
@@ -136,8 +140,8 @@ public class ArticleController {
                 .title(article.getTitle())
                 .description(article.getDescription())
                 .body(article.getBody())
-                .createdAt(article.getCreatedAt())
-                .updatedAt(article.getUpdatedAt())
+                .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
+                .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
                 .favorited(articleService.isFavorite(article,member))
                 .favoritesCount(articleService.countFavoriteByArticle(article))
                 .build();
@@ -193,11 +197,13 @@ public class ArticleController {
                     .title(updtaeArticle.getTitle())
                     .description(updtaeArticle.getDescription())
                     .body(updtaeArticle.getBody())
-                    .createdAt(updtaeArticle.getCreatedAt())
-                    .updatedAt(updtaeArticle.getUpdatedAt())
+                    .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
+                    .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
                     .favorited(articleService.isFavorite(article,member))
                     .favoritesCount(articleService.countFavoriteByArticle(article))
                     .build();
+
+            articleCreateResponse.setTagList(new ArrayList<>());
 
             return new ResultArticle(articleCreateResponse);
         } else {
@@ -235,8 +241,8 @@ public class ArticleController {
                 .title(article.getTitle())
                 .description(article.getDescription())
                 .body(article.getBody())
-                .createdAt(article.getCreatedAt())
-                .updatedAt(article.getUpdatedAt())
+                .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
+                .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
                 .favorited(articleService.isFavorite(article,member))
                 .favoritesCount(articleService.countFavoriteByArticle(article))
                 .build();
@@ -276,8 +282,8 @@ public class ArticleController {
                 .title(article.getTitle())
                 .description(article.getDescription())
                 .body(article.getBody())
-                .createdAt(article.getCreatedAt())
-                .updatedAt(article.getUpdatedAt())
+                .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
+                .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
                 .favorited(articleService.isFavorite(article,member))
                 .favoritesCount(articleService.countFavoriteByArticle(article))
                 .build();
@@ -306,8 +312,8 @@ public class ArticleController {
         String title;
         String description;
         String body;
-        LocalDateTime createdAt;
-        LocalDateTime updatedAt;
+        ZonedDateTime createdAt;
+        ZonedDateTime updatedAt;
         List<String> tagList;
         boolean favorited;
         Long favoritesCount;

@@ -6,6 +6,8 @@ import com.kr.realworldspringboot.entity.*;
 import com.kr.realworldspringboot.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.modelmapper.Conditions;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ public class ArticleServiceImpl implements ArticleService{
     private final ArticleTagRepository articleTagRepository;
     private final ArticleFavoriteRepository articleFavoriteRepository;
     private final ArticleQueryRepository articleQueryRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public Long createArticle(ArticleCreateDTO articleCreateDTO, Member member) {
@@ -85,12 +88,13 @@ public class ArticleServiceImpl implements ArticleService{
 
     @Override
     public Long updateArticle(Long id, ArticleUpdateDTO articleUpdateDTO) {
+
+
         Article article = articleRepository.findById(id).get();
-        article.setTitle(articleUpdateDTO.getTitle());
-        article.setSlugify();
-        article.setDescription(articleUpdateDTO.getDescription());
-        article.setBody(articleUpdateDTO.getBody());
-        article.setUpdatedAt(LocalDateTime.now());
+
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        modelMapper.map(articleUpdateDTO,article);
+
         articleRepository.save(article);
         return article.getId();
     }
@@ -130,6 +134,11 @@ public class ArticleServiceImpl implements ArticleService{
         //TODO articleSearch 구현
         List<Article> list = articleQueryRepository.getArticle(articleSearch);
         return list;
+    }
+
+    @Override
+    public int getArticleCount(ArticleSearch articleSearch) {
+        return articleQueryRepository.getArticleCount(articleSearch);
     }
 
 }

@@ -146,7 +146,8 @@ class ArticleControllerTest extends BaseControllerTest {
 //                .andExpect(jsonPath("$.articles[0].author.username").value("test01"))
 //                .andExpect(jsonPath("$.articles[0].author.following").value(false))
 //                .andExpect(jsonPath("$.articles[0].author.bio").hasJsonPath())
-                .andExpect(jsonPath("$.articles[19].author.image").hasJsonPath());
+                .andExpect(jsonPath("$.articles[19].author.image").hasJsonPath())
+                .andExpect(jsonPath("$.articlesCount").hasJsonPath());
     }
 
     @Test

@@ -33,6 +33,8 @@ public interface ArticleService {
 
     List<Article> getArticles(ArticleSearch articleSearch);
 
+    int getArticleCount(ArticleSearch articleSearch);
+
     default Article createDtoToEntity(ArticleCreateDTO articleCreateDTO) {
         LocalDateTime date = LocalDateTime.now();
         Article article = Article.builder()

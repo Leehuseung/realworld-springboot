@@ -19,6 +19,14 @@ public class ArticleQueryRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    public int getArticleCount(ArticleSearch articleSearch) {
+        int cnt = jpaQueryFactory
+                .select(article)
+                .from(article)
+//                .where(tagNameEq(articleSearch.getTag()))
+                .fetch().size();
+        return cnt;
+    }
 
     public List<Article> getArticle(ArticleSearch articleSearch){
 

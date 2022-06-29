@@ -20,11 +20,8 @@ public class ArticleUpdateDTO {
     @Data
     @NoArgsConstructor
     class Article {
-        @NotEmpty(message = "title")
         private String title;
-        @NotEmpty(message = "description")
         private String description;
-        @NotEmpty(message = "body")
         private String body;
     }
 }
