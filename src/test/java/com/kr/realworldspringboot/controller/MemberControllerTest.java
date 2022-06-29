@@ -152,6 +152,19 @@ class MemberControllerTest extends BaseControllerTest{
                 .andExpect(jsonPath("$.user.image").value("https://i.stack.imgur.com/xHWG8.jpg"));
     }
 
+    @Test
+    @DisplayName("유저 업데이트 null인 field 존재")
+    public void update_user_optional(@Autowired MockMvc mvc) throws Exception {
+        String body = "{\"user\":{\"email\":\"change_email@email.com\"}}";
+
+        //when
+        mvc.perform(put("/api/user").header(AUTHORIZATION,test01tokenHeader).contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user.username").value(TEST_01))
+                .andExpect(jsonPath("$.user.email").value("change_email@email.com"))
+                .andExpect(jsonPath("$.user.token").isNotEmpty());
+    }
+
     /**
      * 유저 업데이트시 Follow테이블의 Username도 업데이트돼야한다.
      * test03을 test20으로 업데이트

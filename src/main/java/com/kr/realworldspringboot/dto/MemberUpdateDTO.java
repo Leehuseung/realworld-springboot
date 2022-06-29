@@ -25,16 +25,15 @@ public class MemberUpdateDTO {
 
     public String getUsername() { return user.getUsername(); }
 
+    public String getPassowrd() { return user.getPassword(); }
+
     @Data
     @NoArgsConstructor
     class User {
-        @NotEmpty(message = "email")
         private String email;
-        @NotEmpty(message = "username")
         private String username;
-        @NotEmpty(message = "image")
+        private String password;
         private String image;
-        @NotEmpty(message = "bio")
         private String bio;
 
     }

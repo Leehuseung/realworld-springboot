@@ -8,6 +8,9 @@ import com.kr.realworldspringboot.repository.MemberRepository;
 import com.kr.realworldspringboot.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.modelmapper.Condition;
+import org.modelmapper.Conditions;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,7 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
     private final ProfileRepository profileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     @Override
     public Long registerMember(MemberRegisterDTO memberRegisterDTO) {
@@ -52,10 +56,10 @@ public class MemberServiceImpl implements MemberService{
     public Long updateMember(String email,MemberUpdateDTO memberUpdateDTO) {
 
         Member member = memberRepository.findByEmail(email).get();
-        member.setEmail(memberUpdateDTO.getEmail());
-        member.setUsername(memberUpdateDTO.getUsername());
-        member.setImage(memberUpdateDTO.getImage());
-        member.setBio(memberUpdateDTO.getBio());
+
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        modelMapper.map(memberUpdateDTO,member);
+
         memberRepository.save(member);
 
         return member.getId();
