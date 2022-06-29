@@ -4,6 +4,7 @@ import com.kr.realworldspringboot.dto.ArticleCreateDTO;
 import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
 import com.kr.realworldspringboot.dto.AuthorDTO;
 import com.kr.realworldspringboot.entity.*;
+import com.kr.realworldspringboot.repository.ArticleSearch;
 import com.kr.realworldspringboot.service.ArticleService;
 import com.kr.realworldspringboot.service.MemberService;
 import com.kr.realworldspringboot.service.ProfileService;
@@ -13,6 +14,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.minidev.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,6 +32,47 @@ public class ArticleController {
     private final ArticleService articleService;
     private final MemberService memberService;
     private final ProfileService profileService;
+
+    @GetMapping("/api/articles")
+    public JSONObject getArticles(@RequestHeader Map<String, Object> requestHeader, @ModelAttribute("articleSearch") ArticleSearch articleSearch) {
+        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
+        JSONObject jsonObject = new JSONObject();
+        List<Article> list = articleService.getArticles(articleSearch);
+
+        List<ArticleCreateResponse> responseList = new ArrayList<>();
+
+        for (int i = 0; i < list.size(); i++) {
+            Article article = list.get(i);
+
+            Member member = article.getMember();
+
+            AuthorDTO build = AuthorDTO.builder()
+                    .username(member.getUsername())
+                    .bio(member.getBio())
+                    .image(member.getImage())
+                    .following(profileService.isFollow(email, article.getMember().getUsername()))
+                    .build();
+            AuthorDTO author = build;
+
+            ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
+                    .author(author)
+                    .slug(article.getSlug())
+                    .title(article.getTitle())
+                    .description(article.getDescription())
+                    .body(article.getBody())
+                    .createdAt(article.getCreatedAt())
+                    .updatedAt(article.getUpdatedAt())
+                    .favorited(articleService.isFavorite(article,member))
+                    .favoritesCount(articleService.countFavoriteByArticle(article))
+                    .build();
+
+            responseList.add(articleCreateResponse);
+        }
+
+        jsonObject.put("articles",responseList);
+
+        return jsonObject;
+    }
 
     @GetMapping("/api/articles/{slug}")
     public ResultArticle getArticle(@RequestHeader Map<String, Object> requestHeader, @PathVariable String slug) {

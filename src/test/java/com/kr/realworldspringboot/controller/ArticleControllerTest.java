@@ -80,16 +80,73 @@ class ArticleControllerTest extends BaseControllerTest {
         Article article1 = articleRepository.findBySlug(TEST_ARTICLE_1_SLUG);
         insertArticleFavorite(article1,test02);
         insertArticleFavorite(article1,test03);
+
+
+        //게시글 List Test
+        for (int i = 11; i <= 40; i++) {
+
+            Member member2 = memberRepository.findMemberByUsername("test02");
+            ldt = LocalDateTime.now();
+            Article article2 = Article.builder()
+                    .slug(SLUG+i)
+                    .title(TITLE+i)
+                    .description(DESCRIPTION+i)
+                    .body(BODY+i)
+                    .createdAt(ldt)
+                    .updatedAt(ldt)
+                    .member(member2)
+                    .build();
+
+            articleRepository.save(article2);
+
+        }
+
     }
 
     void insertArticleFavorite(Article article, Member member){
 
-        ArticleFavorite af = ArticleFavorite.builder()
+        ArticleFavorite af = ArticleFavorite.builder()  
                 .article(article)
                 .member(member)
                 .build();
 
         articleFavoriteRepository.save(af);
+    }
+
+    @Test
+    @DisplayName("글 리스트 테스트(파라미터없음)")
+    public void list_articles_test(@Autowired MockMvc mvc) throws Exception {
+        //TODO articles_test 보완필요함.
+        mvc.perform(get("/api/articles").header(AUTHORIZATION,test01tokenHeader))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.articles[0].slug").value("slug40"))
+//                .andExpect(jsonPath("$.articles[0].title").value("How to train your dragon"))
+//                .andExpect(jsonPath("$.articles[0].description").value("Ever wonder how?"))
+//                .andExpect(jsonPath("$.articles[0].body").value("You have to believe"))
+//                .andExpect(jsonPath("$.articles[0].tagList[0]").value("tagA"))
+//                .andExpect(jsonPath("$.articles[0].tagList[1]").value("tagB"))
+//                .andExpect(jsonPath("$.articles[0].createdAt").isNotEmpty())
+//                .andExpect(jsonPath("$.articles[0].updatedAt").isNotEmpty())
+//                .andExpect(jsonPath("$.articles[0].favorited").value(false))
+//                .andExpect(jsonPath("$.articles[0].favoritesCount").value(0))
+//                .andExpect(jsonPath("$.articles[0].author.username").value("test01"))
+//                .andExpect(jsonPath("$.articles[0].author.following").value(false))
+//                .andExpect(jsonPath("$.articles[0].author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.articles[0].author.image").hasJsonPath())
+                .andExpect(jsonPath("$.articles[19].slug").value("slug21"))
+//                .andExpect(jsonPath("$.articles[0].title").value("How to train your dragon"))
+//                .andExpect(jsonPath("$.articles[0].description").value("Ever wonder how?"))
+//                .andExpect(jsonPath("$.articles[0].body").value("You have to believe"))
+//                .andExpect(jsonPath("$.articles[0].tagList[0]").value("tagA"))
+//                .andExpect(jsonPath("$.articles[0].tagList[1]").value("tagB"))
+//                .andExpect(jsonPath("$.articles[0].createdAt").isNotEmpty())
+//                .andExpect(jsonPath("$.articles[0].updatedAt").isNotEmpty())
+//                .andExpect(jsonPath("$.articles[0].favorited").value(false))
+//                .andExpect(jsonPath("$.articles[0].favoritesCount").value(0))
+//                .andExpect(jsonPath("$.articles[0].author.username").value("test01"))
+//                .andExpect(jsonPath("$.articles[0].author.following").value(false))
+//                .andExpect(jsonPath("$.articles[0].author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.articles[19].author.image").hasJsonPath());
     }
 
     @Test

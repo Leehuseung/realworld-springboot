@@ -2,13 +2,14 @@ package com.kr.realworldspringboot.service;
 
 import com.kr.realworldspringboot.dto.ArticleCreateDTO;
 import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
-import com.kr.realworldspringboot.dto.MemberRegisterDTO;
 import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.ArticleFavorite;
 import com.kr.realworldspringboot.entity.Member;
+import com.kr.realworldspringboot.repository.ArticleSearch;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public interface ArticleService {
 
@@ -29,6 +30,8 @@ public interface ArticleService {
     Long countFavoriteByArticle(Article article);
 
     void deleteFavoriteByArticleAndMember(Article article, Member member);
+
+    List<Article> getArticles(ArticleSearch articleSearch);
 
     default Article createDtoToEntity(ArticleCreateDTO articleCreateDTO) {
         LocalDateTime date = LocalDateTime.now();

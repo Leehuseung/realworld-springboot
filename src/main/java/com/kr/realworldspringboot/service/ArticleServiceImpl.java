@@ -3,10 +3,7 @@ package com.kr.realworldspringboot.service;
 import com.kr.realworldspringboot.dto.ArticleCreateDTO;
 import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
 import com.kr.realworldspringboot.entity.*;
-import com.kr.realworldspringboot.repository.ArticleFavoriteRepository;
-import com.kr.realworldspringboot.repository.ArticleRepository;
-import com.kr.realworldspringboot.repository.ArticleTagRepository;
-import com.kr.realworldspringboot.repository.TagRepository;
+import com.kr.realworldspringboot.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -24,6 +21,7 @@ public class ArticleServiceImpl implements ArticleService{
     private final TagRepository tagRepository;
     private final ArticleTagRepository articleTagRepository;
     private final ArticleFavoriteRepository articleFavoriteRepository;
+    private final ArticleQueryRepository articleQueryRepository;
 
     @Override
     public Long createArticle(ArticleCreateDTO articleCreateDTO, Member member) {
@@ -125,6 +123,13 @@ public class ArticleServiceImpl implements ArticleService{
     @Transactional
     public void deleteFavoriteByArticleAndMember(Article article, Member member) {
         articleFavoriteRepository.deleteArticleFavoriteByArticleAndMember(article,member);
+    }
+
+    @Override
+    public List<Article> getArticles(ArticleSearch articleSearch) {
+        //TODO articleSearch 구현
+        List<Article> list = articleQueryRepository.getArticle(articleSearch);
+        return list;
     }
 
 }

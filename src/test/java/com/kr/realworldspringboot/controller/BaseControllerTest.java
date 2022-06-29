@@ -21,25 +21,25 @@ import java.time.LocalDateTime;
 public class BaseControllerTest {
 
     @Autowired
-    MemberRepository memberRepository;
+    public MemberRepository memberRepository;
 
     @Autowired
-    ProfileRepository profileRepository;
+    public ProfileRepository profileRepository;
 
     @Autowired
-    ArticleRepository articleRepository;
+    public ArticleRepository articleRepository;
 
     @Autowired
-    CommentRepository commentRepository;
+    public CommentRepository commentRepository;
 
     @Autowired
-    ArticleTagRepository articleTagRepository;
+    public ArticleTagRepository articleTagRepository;
 
     @Autowired
-    TagRepository tagRepository;
+    public TagRepository tagRepository;
 
     @Autowired
-    ArticleFavoriteRepository articleFavoriteRepository;
+    public ArticleFavoriteRepository articleFavoriteRepository;
 
     public static final String TEST = "test";
     public static final String TEST_01 = "test01";
