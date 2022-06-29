@@ -130,7 +130,7 @@ class MemberControllerTest extends BaseControllerTest{
     @Test
     @DisplayName("유저 정보 가져오기")
     void get_current_user(@Autowired MockMvc mvc) throws Exception {
-        mvc.perform(get("/api/user").header(AUTHORIZATION,"Bearer " + test01token))
+        mvc.perform(get("/api/user").header(AUTHORIZATION,"Token " + test01token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.user.username").value(TEST_01))
                 .andExpect(jsonPath("$.user.email").value(TEST_01_REALWORLD_COM))
@@ -164,7 +164,7 @@ class MemberControllerTest extends BaseControllerTest{
     public void update_user_follow(@Autowired MockMvc mvc) throws Exception {
         String body = "{\"user\":{\"email\":\"test20@realworld.com\", \"username\":\"test20\" ,\"bio\":\"I like to skateboard\",\"image\":\"https://i.stack.imgur.com/xHWG8.jpg\"}}";
 
-        String test03tokenHeader =  "Bearer " + jwtUtil.generateToken("test03@realworld.com");
+        String test03tokenHeader =  "Token " + jwtUtil.generateToken("test03@realworld.com");
 
         //when
         mvc.perform(put("/api/user").header(AUTHORIZATION,test03tokenHeader).contentType(MediaType.APPLICATION_JSON).content(body))

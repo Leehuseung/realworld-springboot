@@ -59,7 +59,7 @@ public class JWTUtil {
     }
 
     public String getToken(String authorization) {
-        return authorization.substring(7);
+        return authorization.substring(6);
     }
 }
 

@@ -56,7 +56,7 @@ class ProfileControllerTest extends BaseControllerTest {
     @DisplayName("로그인 하고 사용자 프로필 가져오기. 사용자 follow여부는 DB에 없을 때")
     public void get_follow_login_false_profile(@Autowired MockMvc mvc) throws Exception {
         String test11 = "test11";
-        mvc.perform(get("/api/profiles/"+test11).header(AUTHORIZATION,"Bearer " + test01token))
+        mvc.perform(get("/api/profiles/"+test11).header(AUTHORIZATION,"Token " + test01token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.profile.username").value(test11))
                 .andExpect(jsonPath("$.profile.bio").isEmpty())
@@ -72,7 +72,7 @@ class ProfileControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("로그인 하고 사용자 프로필 가져오기. 사용자 follow여부는 DB에 있을 때")
     public void get_follow_login_true_profile(@Autowired MockMvc mvc) throws Exception {
-        mvc.perform(get("/api/profiles/"+FOLLOWED_USER).header(AUTHORIZATION,"Bearer " + test01token))
+        mvc.perform(get("/api/profiles/"+FOLLOWED_USER).header(AUTHORIZATION,"Token " + test01token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.profile.username").value(FOLLOWED_USER))
                 .andExpect(jsonPath("$.profile.bio").isEmpty())
@@ -88,7 +88,7 @@ class ProfileControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("사용자 follow하기")
     public void follow_user(@Autowired MockMvc mvc) throws Exception {
-        mvc.perform(post("/api/profiles/test02/follow").header(AUTHORIZATION,"Bearer " + test01token))
+        mvc.perform(post("/api/profiles/test02/follow").header(AUTHORIZATION,"Token " + test01token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.profile.username").value("test02"))
                 .andExpect(jsonPath("$.profile.bio").isEmpty())
@@ -103,7 +103,7 @@ class ProfileControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("사용자 중복으로 follow")
     public void follow_user_duplicate(@Autowired MockMvc mvc) throws Exception {
-        mvc.perform(post("/api/profiles/"+FOLLOWED_USER+"/follow").header(AUTHORIZATION,"Bearer " + test01token))
+        mvc.perform(post("/api/profiles/"+FOLLOWED_USER+"/follow").header(AUTHORIZATION,"Token " + test01token))
                 .andExpect(status().is4xxClientError());
     }
 
@@ -115,7 +115,7 @@ class ProfileControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("사용자 follow 취소")
     public void unfollow_user(@Autowired MockMvc mvc) throws Exception {
-        mvc.perform(delete("/api/profiles/"+FOLLOWED_USER+"/follow").header(AUTHORIZATION,"Bearer " + test01token))
+        mvc.perform(delete("/api/profiles/"+FOLLOWED_USER+"/follow").header(AUTHORIZATION,"Token " + test01token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.profile.username").value(FOLLOWED_USER))
                 .andExpect(jsonPath("$.profile.bio").isEmpty())

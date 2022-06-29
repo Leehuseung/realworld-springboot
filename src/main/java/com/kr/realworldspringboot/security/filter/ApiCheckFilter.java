@@ -101,11 +101,11 @@ public class ApiCheckFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
 
         //Authorization 헤더 검증
-        if(authHeader.startsWith("Bearer ")){
+        if(authHeader.startsWith("Token ")){
             log.info("Authorization exist : " + authHeader);
 
             try {
-                String email = jwtUtil.validateAndExtract(authHeader.substring(7));
+                String email = jwtUtil.validateAndExtract(authHeader.substring(6));
                 log.info("validate result : " + email);
                 checkResult = email.length() > 0;
             }catch (Exception e) {

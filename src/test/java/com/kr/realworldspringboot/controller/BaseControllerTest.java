@@ -76,13 +76,13 @@ public class BaseControllerTest {
     static void makeToken() throws Exception {
         jwtUtil = new JWTUtil();
         test01token = jwtUtil.generateToken(TEST_01_REALWORLD_COM);
-        test01tokenHeader = "Bearer " + test01token;
+        test01tokenHeader = "Token " + test01token;
 
         test02token = jwtUtil.generateToken(TEST_02_REALWORLD_COM);
-        test02tokenHeader = "Bearer " + test02token;
+        test02tokenHeader = "Token " + test02token;
 
         test05token = jwtUtil.generateToken(TEST_05_REALWORLD_COM);
-        test05tokenHeader = "Bearer " + test05token;
+        test05tokenHeader = "Token " + test05token;
     }
 
     /**
