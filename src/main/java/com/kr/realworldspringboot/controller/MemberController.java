@@ -5,87 +5,72 @@ import com.kr.realworldspringboot.dto.MemberUpdateDTO;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.service.MemberService;
 import com.kr.realworldspringboot.util.JWTUtil;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.*;
+import net.minidev.json.JSONObject;
+import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Map;
 
 @RestController
-@Log4j2
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
     private final JWTUtil jwtUtil;
+    private final ModelMapper modelMapper;
 
     @PostMapping("/api/users")
-    public ResultMember registerMember(@RequestBody @Valid MemberRegisterDTO memberRegisterDTO){
+    public JSONObject registerMember(@RequestBody @Valid MemberRegisterDTO memberRegisterDTO){
 
         Long id = memberService.registerMember(memberRegisterDTO);
         Member member = memberService.selectMemberById(id);
 
-        MemberRegisterResponse memberRegisterResponse = MemberRegisterResponse.builder()
-                .email(member.getEmail())
-                .token(null)
-                .username(member.getUsername())
-                .build();
+        MemberResponse memberResponse = new MemberResponse();
+        modelMapper.map(member,memberResponse);
 
-        return new ResultMember(memberRegisterResponse);
+        return getReturnJsonObject(memberResponse);
     }
 
     @GetMapping("/api/user")
-    public ResultMember getMember(@RequestHeader Map<String, Object> requestHeader) {
-
+    public JSONObject getMember(@RequestHeader Map<String, Object> requestHeader) {
         String token = jwtUtil.getToken((String)requestHeader.get("authorization"));
         String email = jwtUtil.validateAndExtract(token);
-
         Member member = memberService.selectByEmail(email);
 
-        MemberRegisterResponse memberRegisterResponse = MemberRegisterResponse.builder()
-                .email(member.getEmail())
-                .token(token)
-                .username(member.getUsername())
-                .bio(member.getBio())
-                .image(member.getImage())
-                .build();
+        MemberResponse memberResponse = new MemberResponse();
+        modelMapper.map(member,memberResponse);
+        memberResponse.setToken(token);
 
-        return new ResultMember(memberRegisterResponse);
+        return getReturnJsonObject(memberResponse);
     }
 
     @PutMapping("/api/user")
-    public ResultMember updateMember(@RequestHeader Map<String, Object> requestHeader,@RequestBody @Valid MemberUpdateDTO memberUpdateDTO){
+    public JSONObject updateMember(@RequestHeader Map<String, Object> requestHeader, @RequestBody @Valid MemberUpdateDTO memberUpdateDTO){
 
         String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
         Long id = memberService.updateMember(email,memberUpdateDTO);
         Member member = memberService.selectMemberById(id);
 
-        MemberRegisterResponse memberRegisterResponse = MemberRegisterResponse.builder()
-                .email(member.getEmail())
-                .token(jwtUtil.generateToken(member.getEmail()))
-                .username(member.getUsername())
-                .bio(member.getBio())
-                .image(member.getImage())
-                .build();
+        MemberResponse memberResponse = new MemberResponse();
+        modelMapper.map(member,memberResponse);
+        memberResponse.setToken(jwtUtil.generateToken(member.getEmail()));
 
-        return new ResultMember(memberRegisterResponse);
+        return getReturnJsonObject(memberResponse);
     }
 
-
-    @Data
-    @AllArgsConstructor
-    static class ResultMember {
-        MemberRegisterResponse user;
+    public JSONObject getReturnJsonObject(MemberResponse memberResponse){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("user",memberResponse);
+        return jsonObject;
     }
 
     @Data
-    @AllArgsConstructor
     @Builder
-    static class MemberRegisterResponse {
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static class MemberResponse {
         private String email;
         private String token;
         private String username;
