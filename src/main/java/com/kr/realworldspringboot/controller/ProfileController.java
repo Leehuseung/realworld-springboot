@@ -4,11 +4,10 @@ import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.service.MemberService;
 import com.kr.realworldspringboot.service.ProfileService;
 import com.kr.realworldspringboot.util.JWTUtil;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.log4j.Log4j2;
+import net.minidev.json.JSONObject;
+import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -21,9 +20,10 @@ public class ProfileController {
     private final ProfileService profileService;
     private final MemberService memberService;
     private final JWTUtil jwtUtil;
+    private final ModelMapper modelMapper;
 
     @GetMapping("/api/profiles/{username}")
-    public ResultProfile getProfile(@RequestHeader Map<String, Object> requestHeader, @PathVariable String username){
+    public JSONObject getProfile(@RequestHeader Map<String, Object> requestHeader, @PathVariable String username){
         boolean isFollow = false;
 
         if(requestHeader.get("authorization") != null){
@@ -32,63 +32,51 @@ public class ProfileController {
         }
         Member member = memberService.selectMemberByUsername(username);
 
-
-        ResultProfileResponse profileRegisterResponse = ResultProfileResponse.builder()
-                .username(member.getUsername())
-                .bio(member.getBio())
-                .image(member.getImage())
-                .following(isFollow)
-                .build();
-
-        return new ResultProfile(profileRegisterResponse);
+        ProfileResponse profileResponse = new ProfileResponse();
+        modelMapper.map(member,profileResponse);
+        profileResponse.setFollowing(isFollow);
+        return getReturnJsonObject(profileResponse);
     }
 
     @PostMapping("/api/profiles/{username}/follow")
-    public ResultProfile followUser(@RequestHeader Map<String, Object> requestHeader, @PathVariable String username){
+    public JSONObject followUser(@RequestHeader Map<String, Object> requestHeader, @PathVariable String username){
         String loginEmail = jwtUtil.getEmailbyHeader(requestHeader.get("authorization").toString());
 
         Member member = memberService.selectMemberByUsername(username);
 
         profileService.followUser(loginEmail,username);
 
-        ResultProfileResponse memberRegisterResponse = ResultProfileResponse.builder()
-                .username(member.getUsername())
-                .bio(member.getBio())
-                .image(member.getImage())
-                .following(true)
-                .build();
-
-        return new ResultProfile(memberRegisterResponse);
+        ProfileResponse profileResponse = new ProfileResponse();
+        modelMapper.map(member,profileResponse);
+        profileResponse.setFollowing(true);
+        return getReturnJsonObject(profileResponse);
     }
 
     @DeleteMapping("/api/profiles/{username}/follow")
-    public ResultProfile unfollowUser(@RequestHeader Map<String, Object> requestHeader, @PathVariable String username){
+    public JSONObject unfollowUser(@RequestHeader Map<String, Object> requestHeader, @PathVariable String username){
         String loginEmail = jwtUtil.getEmailbyHeader(requestHeader.get("authorization").toString());
 
         Member member = memberService.selectMemberByUsername(username);
 
         profileService.unfollowUser(loginEmail, username);
 
-        ResultProfileResponse memberRegisterResponse = ResultProfileResponse.builder()
-                .username(member.getUsername())
-                .bio(member.getBio())
-                .image(member.getImage())
-                .following(false)
-                .build();
+        ProfileResponse profileResponse = new ProfileResponse();
+        modelMapper.map(member,profileResponse);
+        profileResponse.setFollowing(false);
+        return getReturnJsonObject(profileResponse);
+    }
 
-        return new ResultProfile(memberRegisterResponse);
+    public JSONObject getReturnJsonObject(ProfileResponse profileResponse){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("profile",profileResponse);
+        return jsonObject;
     }
 
     @Data
-    @AllArgsConstructor
-    static class ResultProfile {
-        ProfileController.ResultProfileResponse profile;
-    }
-
-    @Data
-    @AllArgsConstructor
     @Builder
-    static class ResultProfileResponse {
+    @AllArgsConstructor
+    @NoArgsConstructor
+    static class ProfileResponse {
         private String username;
         private String bio;
         private String image;
