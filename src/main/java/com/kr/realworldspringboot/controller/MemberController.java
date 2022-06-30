@@ -23,40 +23,30 @@ public class MemberController {
 
     @PostMapping("/api/users")
     public JSONObject registerMember(@RequestBody @Valid MemberRegisterDTO memberRegisterDTO){
-
         Long id = memberService.registerMember(memberRegisterDTO);
         Member member = memberService.selectMemberById(id);
 
         MemberResponse memberResponse = new MemberResponse();
         modelMapper.map(member,memberResponse);
-
         return getReturnJsonObject(memberResponse);
     }
 
     @GetMapping("/api/user")
-    public JSONObject getMember(@RequestHeader Map<String, Object> requestHeader) {
-        String token = jwtUtil.getToken((String)requestHeader.get("authorization"));
-        String email = jwtUtil.validateAndExtract(token);
-        Member member = memberService.selectByEmail(email);
-
+    public JSONObject getMember(@RequestAttribute Member member, @RequestAttribute String token) {
         MemberResponse memberResponse = new MemberResponse();
         modelMapper.map(member,memberResponse);
         memberResponse.setToken(token);
-
         return getReturnJsonObject(memberResponse);
     }
 
     @PutMapping("/api/user")
-    public JSONObject updateMember(@RequestHeader Map<String, Object> requestHeader, @RequestBody @Valid MemberUpdateDTO memberUpdateDTO){
-
-        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
-        Long id = memberService.updateMember(email,memberUpdateDTO);
-        Member member = memberService.selectMemberById(id);
+    public JSONObject updateMember(@RequestAttribute Member member, @RequestBody @Valid MemberUpdateDTO memberUpdateDTO){
+        Long id = memberService.updateMember(member.getEmail(),memberUpdateDTO);
+        Member updateMember = memberService.selectMemberById(id);
 
         MemberResponse memberResponse = new MemberResponse();
-        modelMapper.map(member,memberResponse);
-        memberResponse.setToken(jwtUtil.generateToken(member.getEmail()));
-
+        modelMapper.map(updateMember,memberResponse);
+        memberResponse.setToken(jwtUtil.generateToken(updateMember.getEmail()));
         return getReturnJsonObject(memberResponse);
     }
 
