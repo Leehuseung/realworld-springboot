@@ -1,16 +1,12 @@
 package com.kr.realworldspringboot.controller;
 
+import com.kr.realworldspringboot.dto.ProfileDTO;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.service.MemberService;
 import com.kr.realworldspringboot.service.ProfileService;
-import com.kr.realworldspringboot.util.JWTUtil;
-import lombok.*;
-import lombok.extern.log4j.Log4j2;
+import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
-import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,62 +14,36 @@ public class ProfileController {
 
     private final ProfileService profileService;
     private final MemberService memberService;
-    private final JWTUtil jwtUtil;
-    private final ModelMapper modelMapper;
 
     @GetMapping("/api/profiles/{username}")
     public JSONObject getProfile(@RequestAttribute Member member, @PathVariable String username){
-        boolean isFollow = false;
-
-        if(member.isValid()){
-            isFollow = profileService.isFollow(member.getEmail(), username);
-        }
-        Member profileMember = memberService.selectMemberByUsername(username);
-
-        ProfileResponse profileResponse = new ProfileResponse();
-        modelMapper.map(profileMember,profileResponse);
-        profileResponse.setFollowing(isFollow);
-        return getReturnJsonObject(profileResponse);
+        Member followMember = memberService.selectMemberByUsername(username);
+        ProfileDTO profileDTO = profileService.findProfile(followMember.getId(),member.getId());
+        return getReturnJsonObject(profileDTO);
     }
 
     @PostMapping("/api/profiles/{username}/follow")
     public JSONObject followUser(@RequestAttribute Member member, @PathVariable String username){
-        profileService.followUser(member.getEmail(),username);
+        profileService.followUser(member.getId(),username);
 
         Member followMember = memberService.selectMemberByUsername(username);
-
-        ProfileResponse profileResponse = new ProfileResponse();
-        modelMapper.map(followMember,profileResponse);
-        profileResponse.setFollowing(true);
-        return getReturnJsonObject(profileResponse);
+        ProfileDTO profileDTO = profileService.findProfile(followMember.getId(),member.getId());
+        return getReturnJsonObject(profileDTO);
     }
 
     @DeleteMapping("/api/profiles/{username}/follow")
     public JSONObject unfollowUser(@RequestAttribute Member member, @PathVariable String username){
-        profileService.unfollowUser(member.getEmail(), username);
+        profileService.unfollowUser(member.getId(), username);
 
         Member followMember = memberService.selectMemberByUsername(username);
-
-        ProfileResponse profileResponse = new ProfileResponse();
-        modelMapper.map(followMember,profileResponse);
-        profileResponse.setFollowing(false);
-        return getReturnJsonObject(profileResponse);
+        ProfileDTO profileDTO = profileService.findProfile(followMember.getId(),member.getId());
+        return getReturnJsonObject(profileDTO);
     }
 
-    public JSONObject getReturnJsonObject(ProfileResponse profileResponse){
+    public JSONObject getReturnJsonObject(ProfileDTO profileDTO){
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("profile",profileResponse);
+        jsonObject.put("profile",profileDTO);
         return jsonObject;
     }
 
-    @Data
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    static class ProfileResponse {
-        private String username;
-        private String bio;
-        private String image;
-        private boolean following;
-    }
 }

@@ -1,9 +1,11 @@
 package com.kr.realworldspringboot.service;
 
+import com.kr.realworldspringboot.dto.ProfileDTO;
 import com.kr.realworldspringboot.entity.Follow;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.exception.DuplicateException;
 import com.kr.realworldspringboot.repository.MemberRepository;
+import com.kr.realworldspringboot.repository.ProfileQueryRepository;
 import com.kr.realworldspringboot.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -18,6 +20,7 @@ public class ProfileServiceImpl implements ProfileService{
 
     private final ProfileRepository profileRepository;
     private final MemberRepository memberRepository;
+    private final ProfileQueryRepository profileQueryRepository;
 
     @Override
     public boolean isFollow(String userEmail, String username) {
@@ -31,15 +34,14 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     @Override
-    public void followUser(String loginEmail, String username) {
-        Member member = memberRepository.findMemberByUsername(username);
+    public void followUser(Long memberId, String username) {
+        Member member = memberRepository.findById(memberId).get();
         Member followMember = memberRepository.findMemberByUsername(username);
 
         Optional<Follow> optional = profileRepository.findByMemberIdAndFollowUsername(member.getId(), followMember.getId());
         if(!optional.isEmpty()){
             throw new DuplicateException("username");
         }
-
 
         Follow follow = Follow.builder()
                 .memberId(member.getId())
@@ -49,12 +51,19 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     @Override
-    public void unfollowUser(String loginEmail, String username) {
-        Member member = memberRepository.findMemberByUsername(username);
+    public void unfollowUser(Long memberId, String username) {
+        Member member = memberRepository.findById(memberId).get();
         Member followMember = memberRepository.findMemberByUsername(username);
 
         Follow selectFollow = profileRepository.findByMemberIdAndFollowUsername(member.getId(), followMember.getId()).get();
         profileRepository.delete(selectFollow);
+    }
+
+    @Override
+    public ProfileDTO findProfile(Long memberId, Long loginMemberId) {
+        ProfileDTO profileDTO = profileQueryRepository.getProfile(memberId,loginMemberId);
+
+        return profileDTO;
     }
 
 
