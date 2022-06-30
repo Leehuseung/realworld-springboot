@@ -57,7 +57,6 @@ public class MemberServiceImpl implements MemberService{
 
         Member member = memberRepository.findByEmail(email).get();
 
-        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         modelMapper.map(memberUpdateDTO,member);
 
         memberRepository.save(member);

@@ -91,8 +91,6 @@ public class ArticleServiceImpl implements ArticleService{
 
 
         Article article = articleRepository.findById(id).get();
-
-        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         modelMapper.map(articleUpdateDTO,article);
 
         articleRepository.save(article);
