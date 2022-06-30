@@ -28,6 +28,9 @@ public class TokenInterceptor implements HandlerInterceptor {
 
             request.setAttribute("member",member);
             request.setAttribute("token",token);
+        } else {
+            request.setAttribute("member",new Member());
+            request.setAttribute("token","");
         }
 
         return HandlerInterceptor.super.preHandle(request, response, handler);

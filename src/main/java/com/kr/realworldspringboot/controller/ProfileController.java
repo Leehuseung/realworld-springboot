@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@Log4j2
 @RequiredArgsConstructor
 public class ProfileController {
 
@@ -23,45 +22,40 @@ public class ProfileController {
     private final ModelMapper modelMapper;
 
     @GetMapping("/api/profiles/{username}")
-    public JSONObject getProfile(@RequestHeader Map<String, Object> requestHeader, @PathVariable String username){
+    public JSONObject getProfile(@RequestAttribute Member member, @PathVariable String username){
         boolean isFollow = false;
 
-        if(requestHeader.get("authorization") != null){
-            String loginEmail = jwtUtil.getEmailbyHeader(requestHeader.get("authorization").toString());
-            isFollow = profileService.isFollow(loginEmail, username);
+        if(member.isValid()){
+            isFollow = profileService.isFollow(member.getEmail(), username);
         }
-        Member member = memberService.selectMemberByUsername(username);
+        Member profileMember = memberService.selectMemberByUsername(username);
 
         ProfileResponse profileResponse = new ProfileResponse();
-        modelMapper.map(member,profileResponse);
+        modelMapper.map(profileMember,profileResponse);
         profileResponse.setFollowing(isFollow);
         return getReturnJsonObject(profileResponse);
     }
 
     @PostMapping("/api/profiles/{username}/follow")
-    public JSONObject followUser(@RequestHeader Map<String, Object> requestHeader, @PathVariable String username){
-        String loginEmail = jwtUtil.getEmailbyHeader(requestHeader.get("authorization").toString());
+    public JSONObject followUser(@RequestAttribute Member member, @PathVariable String username){
+        profileService.followUser(member.getEmail(),username);
 
-        Member member = memberService.selectMemberByUsername(username);
-
-        profileService.followUser(loginEmail,username);
+        Member followMember = memberService.selectMemberByUsername(username);
 
         ProfileResponse profileResponse = new ProfileResponse();
-        modelMapper.map(member,profileResponse);
+        modelMapper.map(followMember,profileResponse);
         profileResponse.setFollowing(true);
         return getReturnJsonObject(profileResponse);
     }
 
     @DeleteMapping("/api/profiles/{username}/follow")
-    public JSONObject unfollowUser(@RequestHeader Map<String, Object> requestHeader, @PathVariable String username){
-        String loginEmail = jwtUtil.getEmailbyHeader(requestHeader.get("authorization").toString());
+    public JSONObject unfollowUser(@RequestAttribute Member member, @PathVariable String username){
+        profileService.unfollowUser(member.getEmail(), username);
 
-        Member member = memberService.selectMemberByUsername(username);
-
-        profileService.unfollowUser(loginEmail, username);
+        Member followMember = memberService.selectMemberByUsername(username);
 
         ProfileResponse profileResponse = new ProfileResponse();
-        modelMapper.map(member,profileResponse);
+        modelMapper.map(followMember,profileResponse);
         profileResponse.setFollowing(false);
         return getReturnJsonObject(profileResponse);
     }

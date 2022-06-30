@@ -25,4 +25,7 @@ public class Member {
     private String bio;
     private String image;
 
+    public boolean isValid(){
+        return id == null ? false : true;
+    }
 }
