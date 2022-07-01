@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-class CommentControllerTest extends BaseControllerTest{
+class CommentControllerTest extends BaseControllerTest {
 
     public static final String SLUG_1 = "slug1";
 
@@ -51,7 +51,7 @@ class CommentControllerTest extends BaseControllerTest{
     @DisplayName("댓글 삭제 테스트")
     public void delete_comment(@Autowired MockMvc mvc) throws Exception {
         Article article = articleRepository.findBySlug(SLUG_1);
-        List<Comment> list = commentRepository.findCommentsByArticle(article);
+        List<Comment> list = commentRepository.findCommentsByArticleOrderByCreatedAtDesc(article);
         Comment comment = list.get(0);
         mvc.perform(delete("/api/articles/"+SLUG_1+"/comments/"+comment.getId()).header(AUTHORIZATION,test01tokenHeader))
                 .andExpect(status().isOk());
@@ -70,8 +70,8 @@ class CommentControllerTest extends BaseControllerTest{
                 .andExpect(jsonPath("$.comments[0].id").isNotEmpty())
                 .andExpect(jsonPath("$.comments[0].createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.comments[0].updatedAt").isNotEmpty())
-                .andExpect(jsonPath("$.comments[0].body").value("comment_body5"))
-                .andExpect(jsonPath("$.comments[0].author.username").value("test05"))
+                .andExpect(jsonPath("$.comments[0].body").value("comment_body2"))
+                .andExpect(jsonPath("$.comments[0].author.username").value("test02"))
                 .andExpect(jsonPath("$.comments[0].author.bio").hasJsonPath())
                 .andExpect(jsonPath("$.comments[0].author.image").hasJsonPath())
                 .andExpect(jsonPath("$.comments[0].author.following").hasJsonPath())
@@ -86,14 +86,11 @@ class CommentControllerTest extends BaseControllerTest{
                 .andExpect(jsonPath("$.comments[2].id").isNotEmpty())
                 .andExpect(jsonPath("$.comments[2].createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.comments[2].updatedAt").isNotEmpty())
-                .andExpect(jsonPath("$.comments[2].body").value("comment_body2"))
-                .andExpect(jsonPath("$.comments[2].author.username").value("test02"))
+                .andExpect(jsonPath("$.comments[2].body").value("comment_body5"))
+                .andExpect(jsonPath("$.comments[2].author.username").value("test05"))
                 .andExpect(jsonPath("$.comments[2].author.bio").hasJsonPath())
                 .andExpect(jsonPath("$.comments[2].author.image").hasJsonPath())
                 .andExpect(jsonPath("$.comments[2].author.following").hasJsonPath());
     }
-
-
-
 
 }

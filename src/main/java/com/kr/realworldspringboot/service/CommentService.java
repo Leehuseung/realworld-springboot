@@ -1,6 +1,7 @@
 package com.kr.realworldspringboot.service;
 
 import com.kr.realworldspringboot.dto.ArticleCreateDTO;
+import com.kr.realworldspringboot.dto.CommentDTO;
 import com.kr.realworldspringboot.dto.CommentRegisterDTO;
 import com.kr.realworldspringboot.dto.CommentResponseDTO;
 import com.kr.realworldspringboot.entity.Article;
@@ -12,15 +13,13 @@ import java.util.List;
 
 public interface CommentService {
 
-    Long addComment(Comment comment);
+    Long addComment(String slug, CommentRegisterDTO commentRegisterDTO, Long memberId);
 
-    Comment findById(Long id);
+    CommentDTO findById(Long id,Long memberId);
 
-    void deleteComment(Long id);
+    void deleteComment(Long id, Long memberId);
 
-    List<Comment> getComments(Article article);
-
-    List<CommentResponseDTO> getCommentsDTO(String slug);
+    List<CommentDTO> getComments(String slug,Long memberId);
 
     default Comment createDtoToEntity(CommentRegisterDTO commentRegisterDTO) {
         LocalDateTime date = LocalDateTime.now();

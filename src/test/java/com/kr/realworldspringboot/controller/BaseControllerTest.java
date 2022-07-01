@@ -186,7 +186,7 @@ public class BaseControllerTest {
                 .updatedAt(ldt)
                 .body(body)
                 .article(article)
-                .memberId(member.getId())
+                .member(member)
                 .build();
 
         commentRepository.save(comment);
