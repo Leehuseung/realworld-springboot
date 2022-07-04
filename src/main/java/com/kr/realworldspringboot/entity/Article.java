@@ -1,13 +1,11 @@
 package com.kr.realworldspringboot.entity;
 
-import com.kr.realworldspringboot.repository.ArticleTagRepository;
 import lombok.*;
 
 import javax.persistence.*;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -40,13 +38,13 @@ public class Article {
 
 
 
-    private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
+    private static final Pattern NON_LATIN = Pattern.compile("[^\\w-]");
     private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
 
     public void setSlugify(){
-        String nowhitespace = WHITESPACE.matcher(title).replaceAll("-");
-        String normalized = Normalizer.normalize(nowhitespace, Normalizer.Form.NFD);
-        String slug = NONLATIN.matcher(normalized).replaceAll("");
+        String noWhitespace = WHITESPACE.matcher(title).replaceAll("-");
+        String normalized = Normalizer.normalize(noWhitespace, Normalizer.Form.NFD);
+        String slug = NON_LATIN.matcher(normalized).replaceAll("");
         this.slug = slug.toLowerCase(Locale.ENGLISH);
     }
 
