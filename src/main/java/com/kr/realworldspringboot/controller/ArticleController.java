@@ -1,6 +1,7 @@
 package com.kr.realworldspringboot.controller;
 
 import com.kr.realworldspringboot.dto.ArticleCreateDTO;
+import com.kr.realworldspringboot.dto.ArticleDTO;
 import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
 import com.kr.realworldspringboot.dto.AuthorDTO;
 import com.kr.realworldspringboot.entity.*;
@@ -64,7 +65,7 @@ public class ArticleController {
                     .body(article.getBody())
                     .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
                     .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
-                    .favorited(articleService.isFavorite(article,member))
+                    .favorited(articleService.isFavorite(article,member.getId()))
                     .favoritesCount(articleService.countFavoriteByArticle(article))
                     .build();
 
@@ -79,136 +80,32 @@ public class ArticleController {
     }
 
     @GetMapping("/api/articles/{slug}")
-    public ResultArticle getArticle(@RequestHeader Map<String, Object> requestHeader, @PathVariable String slug) {
-        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
+    public JSONObject getArticle(@RequestAttribute Member member, @PathVariable String slug) {
         Article article = articleService.getArticleBySlug(slug);
-        List<ArticleTag> tagList = article.getArticleTags();
-        Member member = article.getMember();
-
-        AuthorDTO build = AuthorDTO.builder()
-                .username(member.getUsername())
-                .bio(member.getBio())
-                .image(member.getImage())
-                .following(profileService.isFollow(email, article.getMember().getUsername()))
-                .build();
-        AuthorDTO author = build;
-
-        ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
-                .author(author)
-                .slug(article.getSlug())
-                .title(article.getTitle())
-                .description(article.getDescription())
-                .body(article.getBody())
-                .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
-                .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
-                .favorited(articleService.isFavorite(article,member))
-                .favoritesCount(articleService.countFavoriteByArticle(article))
-                .build();
-
-        articleCreateResponse.setTagList(new ArrayList<>());
-
-        for (int i = 0; i < tagList.size(); i++) {
-            Tag tag = tagList.get(i).getTag();
-            articleCreateResponse.getTagList().add(tag.getName());
-        }
-
-        return new ResultArticle(articleCreateResponse);
+        ArticleDTO articleDTO = articleService.getArticle(article.getId(),member.getEmail() == null ? null : member.getId());
+        return getReturnJsonObject(articleDTO);
     }
 
     @PostMapping("/api/articles")
-    public ResultArticle createArticle(@RequestHeader Map<String, Object> requestHeader,@RequestBody @Valid ArticleCreateDTO articleCreateDTO){
-        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
-        Member member = memberService.selectByEmail(email);
-
-        Long id = articleService.createArticle(articleCreateDTO,member);
-
-        Article article = articleService.getArticle(id);
-
-        List<ArticleTag> tagList = article.getArticleTags();
-
-        AuthorDTO build = AuthorDTO.builder()
-                .username(member.getUsername())
-                .bio(member.getBio())
-                .image(member.getImage())
-                .following(profileService.isFollow(email, member.getUsername()))
-                .build();
-        AuthorDTO author = build;
-
-        ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
-                .author(author)
-                .slug(article.getSlug())
-                .title(article.getTitle())
-                .description(article.getDescription())
-                .body(article.getBody())
-                .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
-                .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
-                .favorited(articleService.isFavorite(article,member))
-                .favoritesCount(articleService.countFavoriteByArticle(article))
-                .build();
-
-        articleCreateResponse.setTagList(new ArrayList<>());
-
-        for (int i = 0; i < tagList.size(); i++) {
-            Tag tag = tagList.get(i).getTag();
-            articleCreateResponse.getTagList().add(tag.getName());
-        }
-
-        return new ResultArticle(articleCreateResponse);
+    public JSONObject createArticle(@RequestAttribute Member member,@RequestBody @Valid ArticleCreateDTO articleCreateDTO){
+        Long id = articleService.createArticle(articleCreateDTO,member.getId());
+        ArticleDTO articleDTO = articleService.getArticle(id,member.getId());
+        return getReturnJsonObject(articleDTO);
     }
 
     @DeleteMapping("/api/articles/{slug}")
-    public void deleteArticle(@RequestHeader Map<String, Object> requestHeader, @PathVariable String slug) {
-        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
-
-        Member member = memberService.selectByEmail(email);
+    public void deleteArticle(@RequestAttribute Member member, @PathVariable String slug) {
         Article article = articleService.getArticleBySlug(slug);
-
-        if(member.getId() == article.getMember().getId()){
-            articleService.deleteArticle(article.getId());
-        } else {
-            throw new IllegalArgumentException("not authorized");
-        }
+        articleService.deleteArticle(article.getId(),member.getId());
     }
 
     @PutMapping("/api/articles/{slug}")
-    public ResultArticle updateArticle(@RequestHeader Map<String, Object> requestHeader
+    public JSONObject updateArticle(@RequestAttribute Member member
             , @PathVariable String slug, @RequestBody @Valid ArticleUpdateDTO articleUpdateDTO) {
-        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
-
-        Member member = memberService.selectByEmail(email);
         Article article = articleService.getArticleBySlug(slug);
-
-        if(member.getId().equals(article.getMember().getId())){
-            Long id = articleService.updateArticle(article.getId(),articleUpdateDTO);
-
-            Article updtaeArticle = articleService.getArticle(id);
-
-            AuthorDTO build = AuthorDTO.builder()
-                    .username(member.getUsername())
-                    .bio(member.getBio())
-                    .image(member.getImage())
-                    .following(false)
-                    .build();
-            AuthorDTO author = build;
-
-            ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
-                    .author(author)
-                    .slug(updtaeArticle.getSlug())
-                    .title(updtaeArticle.getTitle())
-                    .description(updtaeArticle.getDescription())
-                    .body(updtaeArticle.getBody())
-                    .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
-                    .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
-                    .favorited(articleService.isFavorite(article,member))
-                    .favoritesCount(articleService.countFavoriteByArticle(article))
-                    .build();
-
-            articleCreateResponse.setTagList(new ArrayList<>());
-
-            return new ResultArticle(articleCreateResponse);
-        } else {
-            throw new IllegalArgumentException("not authorized");
-        }
+        Long id = articleService.updateArticle(article.getId(),member.getId() ,articleUpdateDTO);
+        ArticleDTO articleDTO = articleService.getArticle(id,member.getId());
+        return getReturnJsonObject(articleDTO);
     }
 
     @PostMapping("/api/articles/{slug}/favorite")
@@ -243,7 +140,7 @@ public class ArticleController {
                 .body(article.getBody())
                 .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
                 .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
-                .favorited(articleService.isFavorite(article,member))
+                .favorited(articleService.isFavorite(article,member.getId()))
                 .favoritesCount(articleService.countFavoriteByArticle(article))
                 .build();
 
@@ -284,7 +181,7 @@ public class ArticleController {
                 .body(article.getBody())
                 .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
                 .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
-                .favorited(articleService.isFavorite(article,member))
+                .favorited(articleService.isFavorite(article,member.getId()))
                 .favoritesCount(articleService.countFavoriteByArticle(article))
                 .build();
 
@@ -296,6 +193,12 @@ public class ArticleController {
         }
 
         return new ResultArticle(articleCreateResponse);
+    }
+
+    public JSONObject getReturnJsonObject(ArticleDTO articleDTO){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("article",articleDTO);
+        return jsonObject;
     }
 
     @Data

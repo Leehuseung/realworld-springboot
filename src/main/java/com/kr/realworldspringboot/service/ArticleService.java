@@ -1,6 +1,7 @@
 package com.kr.realworldspringboot.service;
 
 import com.kr.realworldspringboot.dto.ArticleCreateDTO;
+import com.kr.realworldspringboot.dto.ArticleDTO;
 import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
 import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.ArticleFavorite;
@@ -13,17 +14,17 @@ import java.util.List;
 
 public interface ArticleService {
 
-    Long createArticle(ArticleCreateDTO articleCreateDTO,Member member);
+    Long createArticle(ArticleCreateDTO articleCreateDTO,Long memberId);
 
-    Article getArticle(Long id);
+    ArticleDTO getArticle(Long id,Long memberId);
 
     Article getArticleBySlug(String slug);
 
-    void deleteArticle(long id);
+    void deleteArticle(Long id,Long memberId);
 
-    Long updateArticle(Long id, ArticleUpdateDTO articleUpdateDTO);
+    Long updateArticle(Long id, Long memberId, ArticleUpdateDTO articleUpdateDTO);
 
-    boolean isFavorite(Article article, Member member);
+    boolean isFavorite(Article article, Long memberId);
 
     Long saveArticleFavorite(ArticleFavorite articleFavorite);
 
