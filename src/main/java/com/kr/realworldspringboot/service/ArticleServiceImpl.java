@@ -8,6 +8,7 @@ import com.kr.realworldspringboot.repository.*;
 import com.kr.realworldspringboot.util.LocalDateUtcParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.minidev.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -167,15 +168,48 @@ public class ArticleServiceImpl implements ArticleService{
     }
 
     @Override
-    public List<Article> getArticles(ArticleSearch articleSearch) {
-        //TODO articleSearch 구현
-        List<Article> list = articleQueryRepository.getArticle(articleSearch);
-        return list;
-    }
+    public JSONObject getArticles(ArticleSearch articleSearch,Long memberId) {
+        JSONObject jsonObject = new JSONObject();
+        int cnt = 0;
+        List<Article> list = null;
+        if(articleSearch.getTag() != null){
+            list = articleQueryRepository.getArticleByTag(articleSearch);
+            cnt = articleQueryRepository.getArticleByTagCount(articleSearch);
+        } else if(articleSearch.getFavorited() != null){
+            list = articleQueryRepository.getArticleByFavorite(articleSearch);
+            cnt = articleQueryRepository.getArticleByFavoriteCount(articleSearch);
+        } else {
+            list = articleQueryRepository.getArticle(articleSearch);
+            cnt = articleQueryRepository.getArticleCount(articleSearch);
+        }
+        List<ArticleDTO> dtoList = new ArrayList<>();
 
-    @Override
-    public int getArticleCount(ArticleSearch articleSearch) {
-        return articleQueryRepository.getArticleCount(articleSearch);
+        for (Article article : list) {
+            List<ArticleTag> tagList = article.getArticleTags();
+            List<String> tagNameList = new ArrayList<>();
+            for (int i = 0; i < tagList.size(); i++) {
+                Tag tag = tagList.get(i).getTag();
+                tagNameList.add(tag.getName());
+            }
+
+            ArticleDTO articleDTO = ArticleDTO.builder()
+                    .slug(article.getSlug())
+                    .title(article.getTitle())
+                    .description(article.getDescription())
+                    .body(article.getBody())
+                    .tagList(tagNameList)
+                    .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
+                    .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
+                    .favorited(memberId == null ? false : isFavorite(article,memberId))
+                    .favoritesCount(countFavoriteByArticle(article))
+                    .author(profileService.findProfile(article.getMember().getId(),memberId))
+                    .build();
+
+            dtoList.add(articleDTO);
+        }
+        jsonObject.put("articlesCount",cnt);
+        jsonObject.put("articles",dtoList);
+        return jsonObject;
     }
 
 }

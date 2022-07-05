@@ -6,6 +6,7 @@ import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
 import com.kr.realworldspringboot.entity.Article;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.repository.ArticleSearch;
+import net.minidev.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,9 +32,7 @@ public interface ArticleService {
 
     void deleteFavoriteByArticleAndMember(Article article, Member member);
 
-    List<Article> getArticles(ArticleSearch articleSearch);
-
-    int getArticleCount(ArticleSearch articleSearch);
+    JSONObject getArticles(ArticleSearch articleSearch, Long memberId);
 
     default Article createDtoToEntity(ArticleCreateDTO articleCreateDTO) {
         LocalDateTime date = LocalDateTime.now();

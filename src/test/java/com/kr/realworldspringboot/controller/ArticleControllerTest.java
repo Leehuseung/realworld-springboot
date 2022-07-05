@@ -150,6 +150,88 @@ class ArticleControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.articlesCount").hasJsonPath());
     }
 
+    /**
+     * tagA를 갖고있는 글은 TEST_ARTICLE_1_SLUG
+     * @param mvc
+     * @throws Exception
+     */
+    @Test
+    @DisplayName("글 리스트 테스트(tag 파라미터 검증)")
+    public void list_articles_test_tag(@Autowired MockMvc mvc) throws Exception {
+        mvc.perform(get("/api/articles?tag=tagA").header(AUTHORIZATION,test01tokenHeader))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.articles[0].slug").value(TEST_ARTICLE_1_SLUG))
+                .andExpect(jsonPath("$.articles[0].title").value(TEST_ARTICLE_1_TITLE))
+                .andExpect(jsonPath("$.articles[0].description").value(TEST_ARTICLE_1_DESCRIPTION))
+                .andExpect(jsonPath("$.articles[0].body").value("test article body"))
+                .andExpect(jsonPath("$.articles[0].tagList[0]").value("tagA"))
+                .andExpect(jsonPath("$.articles[0].tagList[1]").value("tagB"))
+                .andExpect(jsonPath("$.articles[0].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.articles[0].updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.articles[0].author.username").value("test05"))
+                .andExpect(jsonPath("$.articles[0].author.following").value(false))
+                .andExpect(jsonPath("$.articles[0].author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.articles[0].author.image").hasJsonPath());
+    }
+
+    /**
+     * test05가 작성한 글만 조회
+     * @param mvc
+     * @throws Exception
+     */
+    @Test
+    @DisplayName("글 리스트 테스트(author 파라미터 검증)")
+    public void list_articles_test_author(@Autowired MockMvc mvc) throws Exception {
+        mvc.perform(get("/api/articles?author=test05").header(AUTHORIZATION,test01tokenHeader))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.articles[0].slug").value(TEST_ARTICLE_1_SLUG))
+                .andExpect(jsonPath("$.articles[0].title").value(TEST_ARTICLE_1_TITLE))
+                .andExpect(jsonPath("$.articles[0].description").value(TEST_ARTICLE_1_DESCRIPTION))
+                .andExpect(jsonPath("$.articles[0].body").value("test article body"))
+                .andExpect(jsonPath("$.articles[0].tagList[0]").value("tagA"))
+                .andExpect(jsonPath("$.articles[0].tagList[1]").value("tagB"))
+                .andExpect(jsonPath("$.articles[0].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.articles[0].updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.articles[0].author.username").value("test05"))
+                .andExpect(jsonPath("$.articles[0].author.following").value(false))
+                .andExpect(jsonPath("$.articles[0].author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.articles[0].author.image").hasJsonPath())
+                .andExpect(jsonPath("$.articles[1].slug").value("slug5"))
+                .andExpect(jsonPath("$.articles[1].title").value("title5"))
+                .andExpect(jsonPath("$.articles[1].description").value("description5"))
+                .andExpect(jsonPath("$.articles[1].body").value("body5"))
+                .andExpect(jsonPath("$.articles[1].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.articles[1].updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.articles[1].author.username").value("test05"))
+                .andExpect(jsonPath("$.articles[1].author.following").value(false))
+                .andExpect(jsonPath("$.articles[1].author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.articles[1].author.image").hasJsonPath());
+    }
+
+    /**
+     * test02는 test05의 TEST_ARTICLE_1_SLUG를 좋아요 한 상태임.
+     * @param mvc
+     * @throws Exception
+     */
+    @Test
+    @DisplayName("글 리스트 테스트(favorite 파라미터 검증)")
+    public void list_articles_test_favorite(@Autowired MockMvc mvc) throws Exception {
+        mvc.perform(get("/api/articles?favorited=test02").header(AUTHORIZATION,test01tokenHeader))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.articles[0].slug").value(TEST_ARTICLE_1_SLUG))
+                .andExpect(jsonPath("$.articles[0].title").value(TEST_ARTICLE_1_TITLE))
+                .andExpect(jsonPath("$.articles[0].description").value(TEST_ARTICLE_1_DESCRIPTION))
+                .andExpect(jsonPath("$.articles[0].body").value("test article body"))
+                .andExpect(jsonPath("$.articles[0].tagList[0]").value("tagA"))
+                .andExpect(jsonPath("$.articles[0].tagList[1]").value("tagB"))
+                .andExpect(jsonPath("$.articles[0].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.articles[0].updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.articles[0].author.username").value("test05"))
+                .andExpect(jsonPath("$.articles[0].author.following").value(false))
+                .andExpect(jsonPath("$.articles[0].author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.articles[0].author.image").hasJsonPath());
+    }
+
     @Test
     @DisplayName("글 등록 테스트")
     public void create_article(@Autowired MockMvc mvc) throws Exception {
