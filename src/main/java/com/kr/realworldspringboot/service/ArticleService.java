@@ -34,6 +34,8 @@ public interface ArticleService {
 
     JSONObject getArticles(ArticleSearch articleSearch, Long memberId);
 
+    JSONObject getFeeds(ArticleSearch articleSearch, Long memberId);
+
     default Article createDtoToEntity(ArticleCreateDTO articleCreateDTO) {
         LocalDateTime date = LocalDateTime.now();
         Article article = Article.builder()

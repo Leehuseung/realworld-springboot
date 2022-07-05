@@ -21,6 +21,12 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
+    @GetMapping("/api/articles/feed")
+    public JSONObject getFeeds(@RequestAttribute Member member, @ModelAttribute("articleSearch") ArticleSearch articleSearch) {
+        JSONObject jsonObject = articleService.getFeeds(articleSearch,member.getId());
+        return jsonObject;
+    }
+
     @GetMapping("/api/articles")
     public JSONObject getArticles(@RequestAttribute Member member, @ModelAttribute("articleSearch") ArticleSearch articleSearch) {
         JSONObject jsonObject = articleService.getArticles(articleSearch,member.getId());

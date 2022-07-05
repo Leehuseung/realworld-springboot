@@ -61,6 +61,9 @@ public class ProfileServiceImpl implements ProfileService{
 
     @Override
     public ProfileDTO findProfile(Long memberId, Long loginMemberId) {
+        if(loginMemberId == null){
+            loginMemberId = -1l;
+        }
         ProfileDTO profileDTO = profileQueryRepository.getProfile(memberId,loginMemberId);
 
         return profileDTO;

@@ -101,6 +101,8 @@ class ArticleControllerTest extends BaseControllerTest {
 
         }
 
+        insertFollow("test02","test05");
+
     }
 
     void insertArticleFavorite(Article article, Member member){
@@ -120,32 +122,8 @@ class ArticleControllerTest extends BaseControllerTest {
         mvc.perform(get("/api/articles").header(AUTHORIZATION,test01tokenHeader))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.articles[0].slug").value("slug40"))
-//                .andExpect(jsonPath("$.articles[0].title").value("How to train your dragon"))
-//                .andExpect(jsonPath("$.articles[0].description").value("Ever wonder how?"))
-//                .andExpect(jsonPath("$.articles[0].body").value("You have to believe"))
-//                .andExpect(jsonPath("$.articles[0].tagList[0]").value("tagA"))
-//                .andExpect(jsonPath("$.articles[0].tagList[1]").value("tagB"))
-//                .andExpect(jsonPath("$.articles[0].createdAt").isNotEmpty())
-//                .andExpect(jsonPath("$.articles[0].updatedAt").isNotEmpty())
-//                .andExpect(jsonPath("$.articles[0].favorited").value(false))
-//                .andExpect(jsonPath("$.articles[0].favoritesCount").value(0))
-//                .andExpect(jsonPath("$.articles[0].author.username").value("test01"))
-//                .andExpect(jsonPath("$.articles[0].author.following").value(false))
-//                .andExpect(jsonPath("$.articles[0].author.bio").hasJsonPath())
                 .andExpect(jsonPath("$.articles[0].author.image").hasJsonPath())
                 .andExpect(jsonPath("$.articles[19].slug").value("slug21"))
-//                .andExpect(jsonPath("$.articles[0].title").value("How to train your dragon"))
-//                .andExpect(jsonPath("$.articles[0].description").value("Ever wonder how?"))
-//                .andExpect(jsonPath("$.articles[0].body").value("You have to believe"))
-//                .andExpect(jsonPath("$.articles[0].tagList[0]").value("tagA"))
-//                .andExpect(jsonPath("$.articles[0].tagList[1]").value("tagB"))
-//                .andExpect(jsonPath("$.articles[0].createdAt").isNotEmpty())
-//                .andExpect(jsonPath("$.articles[0].updatedAt").isNotEmpty())
-//                .andExpect(jsonPath("$.articles[0].favorited").value(false))
-//                .andExpect(jsonPath("$.articles[0].favoritesCount").value(0))
-//                .andExpect(jsonPath("$.articles[0].author.username").value("test01"))
-//                .andExpect(jsonPath("$.articles[0].author.following").value(false))
-//                .andExpect(jsonPath("$.articles[0].author.bio").hasJsonPath())
                 .andExpect(jsonPath("$.articles[19].author.image").hasJsonPath())
                 .andExpect(jsonPath("$.articlesCount").hasJsonPath());
     }
@@ -394,11 +372,44 @@ class ArticleControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.article.favorited").value(false))
                 .andExpect(jsonPath("$.article.favoritesCount").value(1))
                 .andExpect(jsonPath("$.article.author.username").value("test05"))
-                .andExpect(jsonPath("$.article.author.following").value(false))
+                .andExpect(jsonPath("$.article.author.following").value(true))
                 .andExpect(jsonPath("$.article.author.bio").hasJsonPath())
                 .andExpect(jsonPath("$.article.author.image").hasJsonPath());
     }
 
+    /**
+     * test02가 test05를 구독중임. test05의 글을 조회한다.
+     * @param mvc
+     * @throws Exception
+     */
+    @Test
+    @DisplayName("피드 테스트")
+    public void feed_test(@Autowired MockMvc mvc) throws Exception {
+        mvc.perform(get("/api/articles/feed").header(AUTHORIZATION,test02tokenHeader))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.articles[0].slug").value(TEST_ARTICLE_1_SLUG))
+                .andExpect(jsonPath("$.articles[0].title").value(TEST_ARTICLE_1_TITLE))
+                .andExpect(jsonPath("$.articles[0].description").value(TEST_ARTICLE_1_DESCRIPTION))
+                .andExpect(jsonPath("$.articles[0].body").value("test article body"))
+                .andExpect(jsonPath("$.articles[0].tagList[0]").value("tagA"))
+                .andExpect(jsonPath("$.articles[0].tagList[1]").value("tagB"))
+                .andExpect(jsonPath("$.articles[0].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.articles[0].updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.articles[0].author.username").value("test05"))
+                .andExpect(jsonPath("$.articles[0].author.following").value(true))
+                .andExpect(jsonPath("$.articles[0].author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.articles[0].author.image").hasJsonPath())
+                .andExpect(jsonPath("$.articles[1].slug").value("slug5"))
+                .andExpect(jsonPath("$.articles[1].title").value("title5"))
+                .andExpect(jsonPath("$.articles[1].description").value("description5"))
+                .andExpect(jsonPath("$.articles[1].body").value("body5"))
+                .andExpect(jsonPath("$.articles[1].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.articles[1].updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.articles[1].author.username").value("test05"))
+                .andExpect(jsonPath("$.articles[1].author.following").value(true))
+                .andExpect(jsonPath("$.articles[1].author.bio").hasJsonPath())
+                .andExpect(jsonPath("$.articles[1].author.image").hasJsonPath());
+    }
 
 
 }

@@ -191,6 +191,52 @@ public class ArticleServiceImpl implements ArticleService{
                 Tag tag = tagList.get(i).getTag();
                 tagNameList.add(tag.getName());
             }
+            if(articleSearch.getTag() != null){
+                int index = 0;
+                for (int i = 0; i < tagNameList.size(); i++) {
+                    if(tagNameList.get(i).equals(articleSearch.getTag())){
+                        index = i;
+                    }
+                }
+                String name = tagNameList.get(index);
+                tagNameList.remove(index);
+                tagNameList.add(0,name);
+            }
+
+            ArticleDTO articleDTO = ArticleDTO.builder()
+                    .slug(article.getSlug())
+                    .title(article.getTitle())
+                    .description(article.getDescription())
+                    .body(article.getBody())
+                    .tagList(tagNameList)
+                    .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
+                    .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
+                    .favorited(memberId == null ? false : isFavorite(article,memberId))
+                    .favoritesCount(countFavoriteByArticle(article))
+                    .author(profileService.findProfile(article.getMember().getId(),memberId))
+                    .build();
+
+            dtoList.add(articleDTO);
+        }
+        jsonObject.put("articlesCount",cnt);
+        jsonObject.put("articles",dtoList);
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject getFeeds(ArticleSearch articleSearch, Long memberId) {
+        JSONObject jsonObject = new JSONObject();
+        int cnt = articleQueryRepository.getFeedsCount(memberId);
+        List<Article> list = articleQueryRepository.getFeeds(articleSearch,memberId);
+        List<ArticleDTO> dtoList = new ArrayList<>();
+
+        for (Article article : list) {
+            List<ArticleTag> tagList = article.getArticleTags();
+            List<String> tagNameList = new ArrayList<>();
+            for (int i = 0; i < tagList.size(); i++) {
+                Tag tag = tagList.get(i).getTag();
+                tagNameList.add(tag.getName());
+            }
 
             ArticleDTO articleDTO = ArticleDTO.builder()
                     .slug(article.getSlug())
