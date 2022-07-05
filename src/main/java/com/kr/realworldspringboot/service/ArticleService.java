@@ -4,7 +4,6 @@ import com.kr.realworldspringboot.dto.ArticleCreateDTO;
 import com.kr.realworldspringboot.dto.ArticleDTO;
 import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
 import com.kr.realworldspringboot.entity.Article;
-import com.kr.realworldspringboot.entity.ArticleFavorite;
 import com.kr.realworldspringboot.entity.Member;
 import com.kr.realworldspringboot.repository.ArticleSearch;
 
@@ -26,7 +25,7 @@ public interface ArticleService {
 
     boolean isFavorite(Article article, Long memberId);
 
-    Long saveArticleFavorite(ArticleFavorite articleFavorite);
+    Long saveArticleFavorite(Long ArticleId, Long memberId);
 
     Long countFavoriteByArticle(Article article);
 

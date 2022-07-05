@@ -138,7 +138,15 @@ public class ArticleServiceImpl implements ArticleService{
     }
 
     @Override
-    public Long saveArticleFavorite(ArticleFavorite articleFavorite) {
+    public Long saveArticleFavorite(Long articleId, Long memberId) {
+        Article article = articleRepository.findById(articleId).get();
+        Member member = memberRepository.findById(memberId).get();
+
+        ArticleFavorite articleFavorite = ArticleFavorite.builder()
+                .article(article)
+                .member(member)
+                .build();
+
         if(articleFavoriteRepository.countByArticleAndMember(articleFavorite.getArticle(),articleFavorite.getMember()) == 0){
             articleFavoriteRepository.save(articleFavorite);
         } else {

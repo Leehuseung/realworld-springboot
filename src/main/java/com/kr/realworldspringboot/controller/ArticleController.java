@@ -109,90 +109,19 @@ public class ArticleController {
     }
 
     @PostMapping("/api/articles/{slug}/favorite")
-    public ResultArticle favoriteArticle(@RequestHeader Map<String, Object> requestHeader, @PathVariable String slug) {
-        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
-
-        Member member = memberService.selectByEmail(email);
+    public JSONObject favoriteArticle(@RequestAttribute Member member, @PathVariable String slug) {
         Article article = articleService.getArticleBySlug(slug);
-
-        ArticleFavorite articleFavorite = ArticleFavorite.builder()
-                .article(article)
-                .member(member)
-                .build();
-
-        articleService.saveArticleFavorite(articleFavorite);
-
-        List<ArticleTag> tagList = article.getArticleTags();
-
-        AuthorDTO build = AuthorDTO.builder()
-                .username(member.getUsername())
-                .bio(member.getBio())
-                .image(member.getImage())
-                .following(profileService.isFollow(email, article.getMember().getUsername()))
-                .build();
-        AuthorDTO author = build;
-
-        ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
-                .author(author)
-                .slug(article.getSlug())
-                .title(article.getTitle())
-                .description(article.getDescription())
-                .body(article.getBody())
-                .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
-                .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
-                .favorited(articleService.isFavorite(article,member.getId()))
-                .favoritesCount(articleService.countFavoriteByArticle(article))
-                .build();
-
-        articleCreateResponse.setTagList(new ArrayList<>());
-
-        for (int i = 0; i < tagList.size(); i++) {
-            Tag tag = tagList.get(i).getTag();
-            articleCreateResponse.getTagList().add(tag.getName());
-        }
-
-        return new ResultArticle(articleCreateResponse);
+        articleService.saveArticleFavorite(article.getId(), member.getId());
+        ArticleDTO articleDTO = articleService.getArticle(article.getId(),member.getId());
+        return getReturnJsonObject(articleDTO);
     }
 
     @DeleteMapping("/api/articles/{slug}/favorite")
-    public ResultArticle unfavoriteArticle(@RequestHeader Map<String, Object> requestHeader, @PathVariable String slug) {
-        String email = jwtUtil.getEmailbyHeader((String)requestHeader.get("authorization"));
-
-        Member member = memberService.selectByEmail(email);
+    public JSONObject unFavoriteArticle(@RequestAttribute Member member, @PathVariable String slug) {
         Article article = articleService.getArticleBySlug(slug);
-
         articleService.deleteFavoriteByArticleAndMember(article,member);
-
-        List<ArticleTag> tagList = article.getArticleTags();
-
-        AuthorDTO build = AuthorDTO.builder()
-                .username(member.getUsername())
-                .bio(member.getBio())
-                .image(member.getImage())
-                .following(profileService.isFollow(email, article.getMember().getUsername()))
-                .build();
-        AuthorDTO author = build;
-
-        ArticleCreateResponse articleCreateResponse = ArticleCreateResponse.builder()
-                .author(author)
-                .slug(article.getSlug())
-                .title(article.getTitle())
-                .description(article.getDescription())
-                .body(article.getBody())
-                .createdAt(localDateUtcParser.localDateTimeParseUTC(article.getCreatedAt()))
-                .updatedAt(localDateUtcParser.localDateTimeParseUTC(article.getUpdatedAt()))
-                .favorited(articleService.isFavorite(article,member.getId()))
-                .favoritesCount(articleService.countFavoriteByArticle(article))
-                .build();
-
-        articleCreateResponse.setTagList(new ArrayList<>());
-
-        for (int i = 0; i < tagList.size(); i++) {
-            Tag tag = tagList.get(i).getTag();
-            articleCreateResponse.getTagList().add(tag.getName());
-        }
-
-        return new ResultArticle(articleCreateResponse);
+        ArticleDTO articleDTO = articleService.getArticle(article.getId(), member.getId());
+        return getReturnJsonObject(articleDTO);
     }
 
     public JSONObject getReturnJsonObject(ArticleDTO articleDTO){

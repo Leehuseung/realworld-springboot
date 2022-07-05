@@ -311,7 +311,7 @@ class ArticleControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.article.updatedAt").isNotEmpty())
                 .andExpect(jsonPath("$.article.favorited").value(false))
                 .andExpect(jsonPath("$.article.favoritesCount").value(1))
-                .andExpect(jsonPath("$.article.author.username").value("test02"))
+                .andExpect(jsonPath("$.article.author.username").value("test05"))
                 .andExpect(jsonPath("$.article.author.following").value(false))
                 .andExpect(jsonPath("$.article.author.bio").hasJsonPath())
                 .andExpect(jsonPath("$.article.author.image").hasJsonPath());
