@@ -118,7 +118,6 @@ class ArticleControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("글 리스트 테스트(파라미터없음)")
     public void list_articles_test(@Autowired MockMvc mvc) throws Exception {
-        //TODO articles_test 보완필요함.
         mvc.perform(get("/api/articles").header(AUTHORIZATION,test01tokenHeader))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.articles[0].slug").value("slug40"))
@@ -307,14 +306,6 @@ class ArticleControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
     }
-
-    //TODO Controller단의 에러 검증 어떻게 할건지?
-//    @Test
-//    @DisplayName("다른사람의 글 삭제 테스트")
-//    public void delete_article_other_user(@Autowired MockMvc mvc) throws Exception {
-//        mvc.perform(delete("/api/articles/"+TEST_ARTICLE_1).header(AUTHORIZATION,test01tokenHeader))
-//                .andExpect(status().is4xxClientError());
-//    }
 
     @Test
     @DisplayName("글 수정 테스트")

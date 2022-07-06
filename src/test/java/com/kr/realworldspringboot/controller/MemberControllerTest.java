@@ -100,20 +100,6 @@ class MemberControllerTest extends BaseControllerTest{
                 .andExpect(jsonPath("$.errors.email[0]").value("has already been taken"));
     }
 
-    //TODO 다른 사용자의 업데이트 테스트 어떻게 할지 생각해보자.
-//    @Test
-//    @DisplayName("다른 사용자의 업데이트 테스트")
-//    public void other_user_update(@Autowired MockMvc mvc) throws Exception {
-//        //given
-//        String body = "{\"user\":{\"email\":\"test02@realworld.com\",\"bio\":\"I like to skateboard\",\"image\":\"https://i.stack.imgur.com/xHWG8.jpg\"}}";
-//        assertThrows(Exception.class, () -> {
-//            mvc.perform(put("/api/user").header(AUTHORIZATION,test01tokenHeader).contentType(MediaType.APPLICATION_JSON).content(body))
-//                    .andDo(print())
-//                    .andExpect(status().is5xxServerError())
-//            ;
-//        });
-//    }
-
     @Test
     @DisplayName("유저 이름 중복 등록 테스트")
     void register_user_username_validate(@Autowired MockMvc mvc) throws Exception {
