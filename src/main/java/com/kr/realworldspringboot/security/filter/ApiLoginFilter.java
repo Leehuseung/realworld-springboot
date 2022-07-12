@@ -5,6 +5,7 @@ import com.kr.realworldspringboot.util.JWTUtil;
 import lombok.extern.log4j.Log4j2;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -73,6 +74,15 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
             jo.put("user",user);
             response.setContentType("application/json");
             response.getOutputStream().write(jo.toString().getBytes());
+
+            ResponseCookie resCookie = ResponseCookie.from("jwt", token)
+                    .httpOnly(true)
+                    .sameSite("None")
+                    .secure(true)
+                    .path("/")
+                    .maxAge(7 * 24 * 60 * 60)
+                    .build();
+            response.addHeader("Set-Cookie", resCookie.toString());
 
         } catch( Exception e) {
             e.printStackTrace();
