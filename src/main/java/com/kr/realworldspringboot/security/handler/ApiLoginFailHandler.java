@@ -18,18 +18,12 @@ public class ApiLoginFailHandler implements AuthenticationFailureHandler {
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
 
         log.info("login fail handler..............");
-
         log.info(exception.getMessage());
-
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
         response.setContentType("application/json; charset=utf-8");
 
         JSONObject json = new JSONObject();
-        String message = exception.getMessage();
-        json.put("code","401");
-        json.put("message",message);
-
+        json.put("errors","email or password is invalid");
         PrintWriter out = response.getWriter();
         out.print(json);
 
