@@ -4,6 +4,7 @@ import com.kr.realworldspringboot.security.filter.ApiCheckFilter;
 import com.kr.realworldspringboot.security.filter.ApiLoginFilter;
 import com.kr.realworldspringboot.security.handler.ApiLoginFailHandler;
 import com.kr.realworldspringboot.util.JWTUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +23,9 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Value("${real-world.allowed-Origin}")
+    String allowedOrigin;
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -63,7 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:8080");
+        configuration.addAllowedOrigin(allowedOrigin);
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);
