@@ -75,14 +75,14 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
             response.setContentType("application/json");
             response.getOutputStream().write(jo.toString().getBytes());
 
-            ResponseCookie resCookie = ResponseCookie.from("jwt", token)
-                    .httpOnly(true)
-                    .sameSite("None")
-                    .secure(true)
-                    .path("/")
-                    .maxAge(7 * 24 * 60 * 60)
-                    .build();
-            response.addHeader("Set-Cookie", resCookie.toString());
+//            ResponseCookie resCookie = ResponseCookie.from("jwt", token)
+//                    .httpOnly(true)
+//                    .sameSite("None")
+//                    .secure(true)
+//                    .path("/")
+//                    .maxAge(7 * 24 * 60 * 60)
+//                    .build();
+//            response.addHeader("Set-Cookie", resCookie.toString());
 
         } catch( Exception e) {
             e.printStackTrace();
