@@ -25,7 +25,11 @@ public class MemberUpdateDTO {
 
     public String getUsername() { return user.getUsername(); }
 
-    public String getPassowrd() { return user.getPassword(); }
+    public String getPassword() { return user.getPassword(); }
+
+    public void setPassword(String password) { user.setPassword(password); }
+
+    public void setEmail(String email) { user.setEmail(email); }
 
     @Data
     @NoArgsConstructor

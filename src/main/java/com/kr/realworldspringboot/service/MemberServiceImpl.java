@@ -57,6 +57,16 @@ public class MemberServiceImpl implements MemberService{
 
         Member member = memberRepository.findByEmail(email).get();
 
+        if(memberUpdateDTO.getPassword() != null){
+            memberUpdateDTO.setPassword(passwordEncoder.encode(memberUpdateDTO.getPassword()));
+        }
+        if(memberUpdateDTO.getPassword() != null && memberUpdateDTO.getPassword().equals("")){
+            memberUpdateDTO.setPassword(member.getPassword());
+        }
+        if(memberUpdateDTO.getEmail().equals("")){
+            memberUpdateDTO.setEmail(member.getEmail());
+        }
+
         modelMapper.map(memberUpdateDTO,member);
 
         memberRepository.save(member);
