@@ -57,6 +57,18 @@ public class MemberServiceImpl implements MemberService{
 
         Member member = memberRepository.findByEmail(email).get();
 
+        //validation check
+        if(!member.getEmail().equals(memberUpdateDTO.getEmail())){
+            if(memberRepository.countMemberByEmail(memberUpdateDTO.getEmail()) > 0){
+                throw new DuplicateException("email");
+            }
+        }
+        if(!member.getUsername().equals(memberUpdateDTO.getUsername())){
+            if(memberRepository.countMemberByUsername(memberUpdateDTO.getUsername()) > 0){
+                throw new DuplicateException("username");
+            }
+        }
+
         if(memberUpdateDTO.getPassword() != null){
             memberUpdateDTO.setPassword(passwordEncoder.encode(memberUpdateDTO.getPassword()));
         }
