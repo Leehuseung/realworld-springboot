@@ -4,6 +4,7 @@ import com.kr.realworldspringboot.dto.ArticleCreateDTO;
 import com.kr.realworldspringboot.dto.ArticleDTO;
 import com.kr.realworldspringboot.dto.ArticleUpdateDTO;
 import com.kr.realworldspringboot.entity.*;
+import com.kr.realworldspringboot.exception.DuplicateException;
 import com.kr.realworldspringboot.repository.*;
 import com.kr.realworldspringboot.util.LocalDateUtcParser;
 import lombok.RequiredArgsConstructor;
@@ -35,36 +36,17 @@ public class ArticleServiceImpl implements ArticleService{
     public Long createArticle(ArticleCreateDTO articleCreateDTO, Long memberId) {
         Member member = memberRepository.findById(memberId).get();
         Article article = createDtoToEntity(articleCreateDTO);
-        List<String> tagList = articleCreateDTO.getTagList();
+
+        if(articleRepository.countArticleBySlug(article.getSlug()) > 0){
+            throw new DuplicateException("article");
+        }
 
         article.setMember(member);
         articleRepository.save(article);
 
-        //tag insert
-        for (String tagName : tagList) {
-            Tag tag;
-            if (tagRepository.countByName(tagName) == 0) {
-                tag = Tag.builder()
-                        .name(tagName)
-                        .build();
-                tagRepository.save(tag);
-            } else {
-                tag = tagRepository.findByName(tagName);
-            }
-            ArticleTag articleTag = ArticleTag.builder()
-                    .article(article)
-                    .tag(tag)
-                    .build();
-
-            /*
-             * article을 save해도 이 이후에 같은 컨트롤러에서 article을 조회해도 ArticleTags는 값이 존재하지않는다.
-             * EntityManager가 flush,clear 된다면 문제가 없겠지만, 1차캐시(영속성컨텍스트)에만 관리할 때는
-             * 아직 DB에 실제로 적용된 것이 아니기 때문에. 메모리에만 올라가 있는 상태임.
-             *
-             * ArticleTag에 article을 set하는 함수에서 article.getArticleTags.add(this) 처럼 한번에 관리해주는 것이 편하다.
-             */
-            article.getArticleTags().add(articleTag);
-            articleTagRepository.save(articleTag);
+        List<String> tagList = articleCreateDTO.getTagList();
+        if(tagList != null){
+            insertTag(article, tagList);
         }
         return article.getId();
     }
@@ -121,14 +103,49 @@ public class ArticleServiceImpl implements ArticleService{
     public Long updateArticle(Long id, Long memberId, ArticleUpdateDTO articleUpdateDTO) {
 
         Article article = articleRepository.findById(id).get();
-
+        String beforeTitle = article.getTitle();
         if(memberId.equals(article.getMember().getId())){
             modelMapper.map(articleUpdateDTO,article);
             article.setSlugify();
+            if(!beforeTitle.equals(articleUpdateDTO.getTitle()) && articleRepository.countArticleBySlug(article.getSlug()) > 0){
+                throw new DuplicateException("article");
+            }
             articleRepository.save(article);
+
+            for (int i = 0; i < article.getArticleTags().size(); i++) {
+                articleTagRepository.delete(article.getArticleTags().get(i));
+                article.setArticleTags(new ArrayList<ArticleTag>());
+            }
+
+            List<String> tagList = articleUpdateDTO.getTagList();
+            if(tagList != null){
+                insertTag(article, tagList);
+            }
+
             return article.getId();
         } else {
             throw new IllegalArgumentException("not authorized");
+        }
+    }
+
+    private void insertTag(Article article, List<String> tagList) {
+        for (String tagName : tagList) {
+            Tag tag;
+            if (tagRepository.countByName(tagName) == 0) {
+                tag = Tag.builder()
+                        .name(tagName)
+                        .build();
+                tagRepository.save(tag);
+            } else {
+                tag = tagRepository.findByName(tagName);
+            }
+            ArticleTag articleTag = ArticleTag.builder()
+                    .article(article)
+                    .tag(tag)
+                    .build();
+
+            article.getArticleTags().add(articleTag);
+            articleTagRepository.save(articleTag);
         }
     }
 

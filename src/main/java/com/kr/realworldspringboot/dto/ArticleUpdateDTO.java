@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @Data
 public class ArticleUpdateDTO {
@@ -17,11 +18,14 @@ public class ArticleUpdateDTO {
 
     public String getBody() { return article.getBody(); }
 
+    public List<String> getTagList(){ return article.getTagList(); }
+
     @Data
     @NoArgsConstructor
     class Article {
         private String title;
         private String description;
         private String body;
+        private List<String> tagList;
     }
 }
