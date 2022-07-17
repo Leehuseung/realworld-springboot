@@ -28,6 +28,7 @@ public class MemberController {
 
         MemberResponse memberResponse = new MemberResponse();
         modelMapper.map(member,memberResponse);
+        memberResponse.setToken(jwtUtil.generateToken(member.getEmail()));
         return getReturnJsonObject(memberResponse);
     }
 

@@ -47,7 +47,7 @@ class MemberControllerTest extends BaseControllerTest{
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.user.username").value("Jacob"))
                 .andExpect(jsonPath("$.user.email").value("jake@jake.jake"))
-                .andExpect(jsonPath("$.user.token").isEmpty())
+                .andExpect(jsonPath("$.user.token").isNotEmpty())
                 .andExpect(jsonPath("$.user.bio").isEmpty())
                 .andExpect(jsonPath("$.user.image").isEmpty());
     }
