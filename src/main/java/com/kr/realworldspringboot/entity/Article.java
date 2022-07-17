@@ -36,16 +36,8 @@ public class Article {
     @OneToMany(mappedBy = "article")
     List<ArticleTag> articleTags = new ArrayList<>();
 
-
-
-    private static final Pattern NON_LATIN = Pattern.compile("[^\\w-]");
-    private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
-
     public void setSlugify(){
-        String noWhitespace = WHITESPACE.matcher(title).replaceAll("-");
-        String normalized = Normalizer.normalize(noWhitespace, Normalizer.Form.NFD);
-        String slug = NON_LATIN.matcher(normalized).replaceAll("");
-        this.slug = slug.toLowerCase(Locale.ENGLISH);
+        this.slug = title.replaceAll(" ","-");
     }
 
     public void addArticleTag(ArticleTag articleTag){
