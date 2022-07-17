@@ -37,7 +37,7 @@ public class Article {
     List<ArticleTag> articleTags = new ArrayList<>();
 
     public void setSlugify(){
-        this.slug = title.replaceAll(" ","-");
+        this.slug = title.replaceAll(" ","-").toLowerCase();
     }
 
     public void addArticleTag(ArticleTag articleTag){
