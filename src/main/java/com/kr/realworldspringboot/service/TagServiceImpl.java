@@ -1,6 +1,8 @@
 package com.kr.realworldspringboot.service;
 
+import com.kr.realworldspringboot.dto.TagDTO;
 import com.kr.realworldspringboot.entity.Tag;
+import com.kr.realworldspringboot.repository.ArticleQueryRepository;
 import com.kr.realworldspringboot.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -16,6 +18,7 @@ import java.util.List;
 public class TagServiceImpl implements TagService{
 
     private final TagRepository tagRepository;
+    private final ArticleQueryRepository articleQueryRepository;
 
     @Override
     public List<Tag> getTagList() {
@@ -25,7 +28,7 @@ public class TagServiceImpl implements TagService{
 
     @Override
     public List<String> getTagNameList() {
-        List<Tag> list = tagRepository.getLastTags(PageRequest.of(0, 10));
+        List<TagDTO> list = articleQueryRepository.getTags();
         List<String> arr = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             arr.add(list.get(i).getName());

@@ -1,7 +1,9 @@
 package com.kr.realworldspringboot.repository;
 
+import com.kr.realworldspringboot.dto.TagDTO;
 import com.kr.realworldspringboot.entity.Article;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.AllArgsConstructor;
@@ -139,4 +141,21 @@ public class ArticleQueryRepository {
 
         return articles;
     }
+
+    public List<TagDTO> getTags(){
+
+        List<TagDTO> tags = jpaQueryFactory
+            .select(Projections.constructor(TagDTO.class,tag.id,tag.name,tag.count()))
+            .from(tag,articleTag)
+            .where(tag.id.eq(articleTag.tag.id))
+            .groupBy(tag.name)
+            .orderBy(tag.count().desc())
+            .offset(0)
+            .limit(10)
+            .fetch();
+
+        return tags;
+    }
+
+
 }
