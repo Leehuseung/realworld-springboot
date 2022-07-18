@@ -42,6 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         list.add("/api/articles/*/comments,get");
         list.add("/api/tags,get");
         list.add("/api/articles,get");
+        list.add("/images/**,get");
         //""에 해당하는 url만 ApiCheckFilter가 동작한다.
         return new ApiCheckFilter("/**",list,jwtUtil());
     }
@@ -78,7 +79,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         http.csrf().disable()
                 .cors().configurationSource(corsConfigurationSource());
 
