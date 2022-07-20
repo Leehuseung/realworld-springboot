@@ -1,23 +1,32 @@
 # ![RealWorld Example App](logo.png)
 
-> ### [YOUR_FRAMEWORK] codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld) spec and API.
+> ### SpringBoot codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld) spec and API.
 
 
-### [Demo](https://demo.realworld.io/)&nbsp;&nbsp;&nbsp;&nbsp;[RealWorld](https://github.com/gothinkster/realworld)
+### [Demo](http://realworld.huseung.me/)&nbsp;&nbsp;&nbsp;&nbsp;[RealWorld](https://github.com/gothinkster/realworld)
 
 
-This codebase was created to demonstrate a fully fledged fullstack application built with **[YOUR_FRAMEWORK]** including CRUD operations, authentication, routing, pagination, and more.
+This codebase was created to demonstrate a fully fledged fullstack application built with SpringBoot including CRUD operations, authentication, routing, pagination, and more.
 
-We've gone to great lengths to adhere to the **[YOUR_FRAMEWORK]** community styleguides & best practices.
+We've gone to great lengths to adhere to the SpringBoot community styleguides & best practices.
 
 For more information on how to this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
 
 
 # How it works
 
-> Describe the general architecture of your app here
+- Spring Boot
+  - JPA
+  - Security
+  - JWT
+- MariaDB, H2
+# Diagram
+-  Entity
+![image](https://user-images.githubusercontent.com/46315625/179870250-e4b629a0-3d59-4f62-a383-b036f8e85255.png)
+
+
 
 # Getting started
-
-> npm install, npm start, etc.
-
+```
+./gradlew bootRun
+```
