@@ -20,9 +20,6 @@ For more information on how to this works with other frontends/backends, head ov
   - Security
   - JWT
 - MariaDB, H2
-# Diagram
--  Entity
-![image](https://user-images.githubusercontent.com/46315625/179870250-e4b629a0-3d59-4f62-a383-b036f8e85255.png)
 
 
 
